@@ -1,26 +1,186 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f7f7f5;
+  --color-bg-tertiary: #f0efe9;
+  --color-bg-card: #ffffff;
+  --color-green-primary: #2a7a2a;
+  --color-green-dark: #1e5c1e;
+  --color-gold: #d4920a;
+  --color-gold-light: #f5a500;
+  --color-text-primary: #111111;
+  --color-text-secondary: #444444;
+  --color-text-muted: #888888;
+  --color-border: #e5e5e0;
+  --color-border-strong: #d0d0c8;
+  --color-border-hover: #2a7a2a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Hover utilities ─────────────────────────────── */
+
+.hover-opacity {
+  transition: opacity 0.2s;
+}
+.hover-opacity:hover {
+  opacity: 0.85;
+}
+
+.hover-green {
+  transition: color 0.2s;
+}
+.hover-green:hover {
+  color: var(--color-green-primary) !important;
+}
+
+.hover-text-primary {
+  transition: color 0.2s;
+}
+.hover-text-primary:hover {
+  color: var(--color-text-primary) !important;
+}
+
+.hover-lift {
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-green-primary) !important;
+  box-shadow: 0 4px 16px rgba(42, 122, 42, 0.1);
+}
+
+.hover-border-green {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.hover-border-green:hover {
+  border-color: var(--color-green-primary) !important;
+  box-shadow: 0 2px 8px rgba(42, 122, 42, 0.08);
+}
+
+.hover-book-btn {
+  transition: background-color 0.2s, color 0.2s;
+}
+.hover-book-btn:hover {
+  background-color: var(--color-green-primary) !important;
+  color: #ffffff !important;
+}
+
+.hover-social {
+  transition: color 0.2s, border-color 0.2s;
+}
+.hover-social:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.hover-activity-link {
+  transition: color 0.2s;
+}
+.hover-activity-link:hover {
+  color: var(--color-green-dark) !important;
+}
+
+.hover-border-white-subtle {
+  transition: border-color 0.2s;
+}
+.hover-border-white-subtle:hover {
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.nav-link {
+  color: #444444;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav-link:hover {
+  color: var(--color-green-primary);
+}
+
+.hero-highlight {
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+.hero-highlight:hover {
+  border-color: var(--color-green-primary);
+}
+
+/* ─── Navbar responsive ───────────────────────────── */
+
+.nav-links-desktop {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-cta-desktop {
+  display: flex;
+  align-items: center;
+}
+
+.nav-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-drawer {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .nav-links-desktop {
+    display: none !important;
+  }
+
+  .nav-cta-desktop {
+    display: none !important;
+  }
+
+  .nav-hamburger {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-drawer {
+    display: none !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
 }
