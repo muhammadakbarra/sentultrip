@@ -7,6 +7,13 @@ import PackageGallery from "@/components/PackageGallery";
 import { getPackageDetail, getAllSlugs } from "@/data/packageDetails";
 import { waLink } from "@/lib/whatsapp";
 
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(price);
+
 export async function generateStaticParams() {
   return getAllSlugs().map((slug) => ({ slug }));
 }
@@ -21,7 +28,7 @@ export async function generateMetadata({
   if (!detail) return {};
   return {
     title: `${detail.name} — SentulTrip`,
-    description: detail.description[0],
+    description: detail.shortDescription,
   };
 }
 
@@ -34,239 +41,342 @@ export default async function PackageDetailPage({
   const detail = getPackageDetail(slug);
   if (!detail) notFound();
 
+  const price = formatPrice(detail.price);
   const bookMsg = waLink(
-    `Halo SentulTrip 👋\n\nSaya ingin booking paket *${detail.name}*.\n\nMohon info ketersediaan jadwal dan cara pembayarannya. Terima kasih.`
+    `Halo SentulTrip 👋\n\nSaya ingin booking paket *${detail.name}*.\n\nMohon info jadwal tersedia, total biaya, dan cara pembayarannya. Terima kasih.`
   );
+
+  const quickInfo = [
+    { label: "Durasi", value: detail.duration },
+    { label: "Harga", value: `${price}/orang` },
+    { label: "Level", value: detail.difficulty },
+    { label: "Min. Usia", value: detail.minAge },
+    { label: "Area", value: detail.locationArea },
+    { label: "Rute", value: detail.routeType },
+  ];
 
   return (
     <>
       <Navbar />
-      <main style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-
-        {/* Breadcrumb */}
-        <div style={{ backgroundColor: "var(--color-bg-secondary)", borderBottom: "1px solid var(--color-border)" }}>
-          <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "12px 24px", fontSize: "13px", color: "#888" }}>
-            <Link href="/" style={{ color: "#888" }}>Beranda</Link>
-            <span style={{ margin: "0 8px" }}>›</span>
-            <Link href="/#paket" style={{ color: "#888" }}>Paket</Link>
-            <span style={{ margin: "0 8px" }}>›</span>
-            <span style={{ color: "#111" }}>{detail.name}</span>
+      <main className="package-page">
+        <div className="package-breadcrumb-wrap">
+          <div className="package-container package-breadcrumb">
+            <Link href="/">Beranda</Link>
+            <span>›</span>
+            <Link href="/#paket">Paket</Link>
+            <span>›</span>
+            <strong>{detail.name}</strong>
           </div>
         </div>
 
-        <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "40px 24px 80px" }}>
+        <section className="package-container package-hero">
+          <div className="package-hero-copy">
+            <span className="package-label">Trekking Sentul</span>
+            <h1>{detail.name}</h1>
+            <p className="package-tagline">{detail.tagline}</p>
+            <p className="package-short">{detail.shortDescription}</p>
 
-          {/* Title block */}
-          <div style={{ marginBottom: "28px" }}>
-            <span style={{
-              display: "inline-block",
-              backgroundColor: "#2a7a2a", color: "#fff",
-              fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em",
-              padding: "3px 12px", borderRadius: "20px", marginBottom: "12px",
-              textTransform: "uppercase",
-            }}>
-              Trekking
-            </span>
-            <h1 style={{ fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 800, color: "#111", lineHeight: 1.15, marginBottom: "8px" }}>
-              {detail.name}
-            </h1>
-            <p style={{ fontSize: "15px", color: "#666", fontStyle: "italic" }}>{detail.tagline}</p>
-          </div>
-
-          {/* Gallery */}
-          <div style={{ marginBottom: "48px" }}>
-            <PackageGallery photos={detail.photos} orientations={detail.photoOrientations} name={detail.name} />
-          </div>
-
-          {/* 2-col layout */}
-          <div className="detail-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "48px", alignItems: "start" }}>
-
-            {/* LEFT — main content */}
-            <div>
-
-              {/* Description */}
-              <section style={{ marginBottom: "40px" }}>
-                <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Tentang Paket Ini</h2>
-                {detail.description.map((p, i) => (
-                  <p key={i} style={{ fontSize: "15px", color: "#444", lineHeight: 1.8, marginBottom: "14px" }}>{p}</p>
-                ))}
-              </section>
-
-              {/* Highlights */}
-              <section style={{ marginBottom: "40px" }}>
-                <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Keunggulan Paket</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
-                  {detail.highlights.map((h, i) => (
-                    <div key={i} style={{
-                      backgroundColor: "#f0f7ee", border: "1px solid #c8e0c5",
-                      borderRadius: "10px", padding: "20px",
-                    }}>
-                      <div style={{ width: "32px", height: "3px", backgroundColor: "#2a7a2a", borderRadius: "2px", marginBottom: "10px" }} />
-                      <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#111", marginBottom: "6px" }}>{h.title}</h3>
-                      <p style={{ fontSize: "13px", color: "#555", lineHeight: 1.65 }}>{h.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Schedule */}
-              <section style={{ marginBottom: "40px" }}>
-                <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Jadwal Perjalanan</h2>
-                <div style={{ position: "relative", paddingLeft: "24px" }}>
-                  <div style={{
-                    position: "absolute", left: "7px", top: "6px", bottom: "6px",
-                    width: "2px", backgroundColor: "#e5e5e0",
-                  }} />
-                  {detail.schedule.map((s, i) => (
-                    <div key={i} style={{ position: "relative", marginBottom: "18px", display: "flex", gap: "16px" }}>
-                      <div style={{
-                        position: "absolute", left: "-21px", top: "4px",
-                        width: "10px", height: "10px", borderRadius: "50%",
-                        backgroundColor: "#2a7a2a", border: "2px solid #fff",
-                        boxShadow: "0 0 0 2px #2a7a2a",
-                        flexShrink: 0,
-                      }} />
-                      <span style={{ fontSize: "13px", fontWeight: 700, color: "#2a7a2a", whiteSpace: "nowrap", minWidth: "44px" }}>
-                        {s.time}
-                      </span>
-                      <span style={{ fontSize: "14px", color: "#444", lineHeight: 1.5 }}>{s.activity}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Includes / Excludes */}
-              <section style={{ marginBottom: "40px" }}>
-                <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Fasilitas & Ketentuan</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }} className="inc-grid">
-                  <div style={{ backgroundColor: "#f0f7ee", border: "1px solid #c8e0c5", borderRadius: "10px", padding: "20px" }}>
-                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#1e5c1e", marginBottom: "12px" }}>✓ Sudah Termasuk</h3>
-                    <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                      {detail.includes.map((item, i) => (
-                        <li key={i} style={{ fontSize: "14px", color: "#333", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                          <span style={{ color: "#2a7a2a", fontWeight: 700, flexShrink: 0 }}>✓</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div style={{ backgroundColor: "#fff8f5", border: "1px solid #f0d0c0", borderRadius: "10px", padding: "20px" }}>
-                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#9a4a20", marginBottom: "12px" }}>✗ Tidak Termasuk</h3>
-                    <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "8px" }}>
-                      {detail.excludes.map((item, i) => (
-                        <li key={i} style={{ fontSize: "14px", color: "#333", display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                          <span style={{ color: "#c0602a", fontWeight: 700, flexShrink: 0 }}>✗</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </section>
-
-              {/* Tips */}
-              <section>
-                <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#111", marginBottom: "16px" }}>Tips Persiapan</h2>
-                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {detail.tips.map((tip, i) => (
-                    <li key={i} style={{
-                      fontSize: "14px", color: "#444", lineHeight: 1.6,
-                      padding: "12px 16px", borderRadius: "8px",
-                      backgroundColor: "var(--color-bg-secondary)",
-                      border: "1px solid var(--color-border)",
-                      display: "flex", gap: "10px", alignItems: "flex-start",
-                    }}>
-                      <span style={{ color: "#d4920a", fontWeight: 700, flexShrink: 0 }}>→</span>
-                      {tip}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
+            <div className="hero-actions">
+              <a href={bookMsg} target="_blank" rel="noopener noreferrer" className="primary-cta">
+                <WaIcon /> Booking via WhatsApp
+              </a>
+              <a href="#detail-paket" className="secondary-cta">Lihat Detail</a>
             </div>
+          </div>
 
-            {/* RIGHT — sticky booking card */}
-            <div style={{ position: "sticky", top: "84px" }}>
-              <div style={{
-                backgroundColor: "#fff", border: "1px solid #e5e5e0",
-                borderRadius: "14px", padding: "28px",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-              }}>
-                {/* Price */}
-                <div style={{ marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid #f0f0eb" }}>
-                  <div style={{ fontSize: "13px", color: "#888", marginBottom: "4px" }}>Harga mulai dari</div>
-                  <div style={{ fontSize: "32px", fontWeight: 800, color: "#2a7a2a", lineHeight: 1 }}>
-                    Rp 150.000
-                  </div>
-                  <div style={{ fontSize: "13px", color: "#aaa" }}>per orang</div>
+          <aside className="hero-price-card">
+            <span>Mulai dari</span>
+            <strong>{price}</strong>
+            <small>per orang</small>
+            <div className="hero-mini-grid">
+              <div><b>{detail.duration}</b><small>Durasi</small></div>
+              <div><b>{detail.difficulty}</b><small>Level</small></div>
+            </div>
+          </aside>
+        </section>
+
+        <section className="package-container gallery-section">
+          <PackageGallery photos={detail.photos} orientations={detail.photoOrientations} name={detail.name} />
+        </section>
+
+        <section id="detail-paket" className="package-container package-content-grid">
+          <div className="package-main">
+            <section className="quick-card-grid">
+              {quickInfo.map((item) => (
+                <div className="quick-card" key={item.label}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
                 </div>
+              ))}
+            </section>
 
-                {/* Info rows */}
-                {[
-                  { label: "Durasi", value: detail.schedule[detail.schedule.length - 1].time + " selesai" },
-                  { label: "Kapasitas", value: detail.capacity },
-                  { label: "Kesulitan", value: detail.difficulty },
-                  { label: "Min. Usia", value: detail.minAge },
-                ].map(({ label, value }) => (
-                  <div key={label} style={{
-                    display: "flex", justifyContent: "space-between",
-                    padding: "10px 0", borderBottom: "1px solid #f0f0eb",
-                    fontSize: "14px",
-                  }}>
-                    <span style={{ color: "#888" }}>{label}</span>
-                    <span style={{ color: "#111", fontWeight: 600 }}>{value}</span>
-                  </div>
+            <Section title="Tentang Paket Ini">
+              {detail.description.map((p, i) => (
+                <p key={i} className="body-copy">{p}</p>
+              ))}
+            </Section>
+
+            <Section title="Kenapa Pilih Paket Ini">
+              <div className="highlight-grid">
+                {detail.highlights.map((h) => (
+                  <article className="highlight-card" key={h.title}>
+                    <div className="accent-line" />
+                    <h3>{h.title}</h3>
+                    <p>{h.desc}</p>
+                  </article>
                 ))}
-
-                {/* Meeting point */}
-                <div style={{ padding: "12px 0", borderBottom: "1px solid #f0f0eb" }}>
-                  <div style={{ fontSize: "13px", color: "#888", marginBottom: "4px" }}>Meeting Point</div>
-                  <div style={{ fontSize: "13px", color: "#333", lineHeight: 1.5 }}>{detail.meetingPoint}</div>
-                </div>
-
-                {/* CTA */}
-                <a
-                  href={bookMsg}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="detail-book-btn"
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                    width: "100%", marginTop: "20px", padding: "14px",
-                    backgroundColor: "#2a7a2a", color: "#fff",
-                    borderRadius: "8px", fontWeight: 700, fontSize: "15px",
-                    textDecoration: "none", boxSizing: "border-box",
-                    transition: "background-color 0.15s",
-                  }}
-                >
-                  <WaIcon />
-                  Book via WhatsApp
-                </a>
-                <p style={{ fontSize: "12px", color: "#aaa", textAlign: "center", marginTop: "10px" }}>
-                  Respon dalam &lt; 1 jam · Tidak ada biaya booking
-                </p>
               </div>
-            </div>
+            </Section>
 
+            <Section title="Cocok Untuk">
+              <div className="pill-list">
+                {detail.suitableFor.map((item) => <span key={item}>{item}</span>)}
+              </div>
+            </Section>
+
+            <Section title="Jadwal Perjalanan">
+              <div className="timeline">
+                {detail.schedule.map((s) => (
+                  <div className="timeline-item" key={`${s.time}-${s.activity}`}>
+                    <time>{s.time}</time>
+                    <p>{s.activity}</p>
+                  </div>
+                ))}
+              </div>
+            </Section>
+
+            <Section title="Fasilitas & Ketentuan">
+              <div className="included-grid">
+                <InfoList title="Sudah Termasuk" type="yes" items={detail.includes} />
+                <InfoList title="Tidak Termasuk" type="no" items={detail.excludes} />
+              </div>
+            </Section>
+
+            <Section title="Yang Perlu Dibawa">
+              <div className="simple-list">
+                {detail.whatToBring.map((item) => <div key={item}>→ {item}</div>)}
+              </div>
+            </Section>
+
+            <Section title="Catatan Keamanan">
+              <div className="simple-list warning-list">
+                {detail.safetyNotes.map((item) => <div key={item}>! {item}</div>)}
+              </div>
+            </Section>
+
+            <Section title="Pertanyaan Umum">
+              <div className="faq-list">
+                {detail.faq.map((faq) => (
+                  <details key={faq.question}>
+                    <summary>{faq.question}</summary>
+                    <p>{faq.answer}</p>
+                  </details>
+                ))}
+              </div>
+            </Section>
+
+            <section className="closing-cta">
+              <h2>Siap trekking ke {detail.name.replace("Trekking ", "")}?</h2>
+              <p>Tanya jadwal dulu juga boleh. Tim SentulTrip akan bantu pilih waktu dan rute yang paling pas.</p>
+              <a href={bookMsg} target="_blank" rel="noopener noreferrer" className="primary-cta">
+                <WaIcon /> Tanya Jadwal via WhatsApp
+              </a>
+            </section>
           </div>
-        </div>
+
+          <aside className="booking-card-wrap">
+            <div className="booking-card">
+              <div className="booking-price">
+                <span>Harga mulai dari</span>
+                <strong>{price}</strong>
+                <small>per orang</small>
+              </div>
+
+              <InfoRow label="Durasi" value={detail.duration} />
+              <InfoRow label="Kapasitas" value={detail.capacity} />
+              <InfoRow label="Kesulitan" value={detail.difficulty} />
+              <InfoRow label="Min. Usia" value={detail.minAge} />
+              <InfoRow label="Waktu terbaik" value={detail.bestTime} />
+
+              <div className="meeting-box">
+                <span>Meeting Point</span>
+                <p>{detail.meetingPoint}</p>
+              </div>
+
+              <a href={bookMsg} target="_blank" rel="noopener noreferrer" className="primary-cta booking-btn">
+                <WaIcon /> Booking via WhatsApp
+              </a>
+              <p className="booking-note">Respon cepat · Bisa tanya dulu sebelum booking</p>
+            </div>
+          </aside>
+        </section>
       </main>
+
+      <a href={bookMsg} target="_blank" rel="noopener noreferrer" className="mobile-sticky-cta">
+        <span>{price}/orang</span>
+        <strong>Booking WhatsApp</strong>
+      </a>
+
       <Footer />
 
       <style>{`
-        .detail-book-btn:hover { background-color: #1e5c1e !important; }
-        @media (max-width: 768px) {
-          .detail-grid { grid-template-columns: 1fr !important; }
-          .inc-grid { grid-template-columns: 1fr !important; }
+        .package-page { background: #fff; color: #111; min-height: 100vh; padding-bottom: 24px; }
+        .package-container { max-width: 1140px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+        .package-breadcrumb-wrap { background: var(--color-bg-secondary); border-bottom: 1px solid var(--color-border); }
+        .package-breadcrumb { display: flex; gap: 8px; align-items: center; padding-top: 12px; padding-bottom: 12px; font-size: 14px; color: #777; overflow-x: auto; white-space: nowrap; }
+        .package-breadcrumb a { color: #777; }
+        .package-breadcrumb strong { color: #222; font-weight: 600; }
+
+        .package-hero { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 34px; align-items: end; padding-top: 42px; padding-bottom: 28px; }
+        .package-label { display: inline-flex; background: #eaf5e8; color: #1e5c1e; border: 1px solid #c8e0c5; border-radius: 999px; padding: 6px 13px; font-size: 12px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 15px; }
+        .package-hero h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.04; letter-spacing: -1.5px; margin: 0 0 12px; font-weight: 850; color: #111; }
+        .package-tagline { font-size: clamp(18px, 2vw, 23px); line-height: 1.35; color: #2a7a2a; font-weight: 750; margin-bottom: 12px; max-width: 760px; }
+        .package-short { font-size: 17px; line-height: 1.75; color: #444; max-width: 760px; margin-bottom: 22px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .primary-cta, .secondary-cta { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 14px 20px; border-radius: 10px; font-size: 16px; font-weight: 800; text-decoration: none; transition: transform .15s, background .15s, border-color .15s; }
+        .primary-cta { background: #2a7a2a; color: #fff; }
+        .primary-cta:hover { background: #1e5c1e; transform: translateY(-1px); }
+        .secondary-cta { color: #1e5c1e; border: 1px solid #c8e0c5; background: #fff; }
+        .secondary-cta:hover { border-color: #2a7a2a; }
+
+        .hero-price-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.07); }
+        .hero-price-card > span, .booking-price span { display: block; color: #777; font-size: 14px; margin-bottom: 4px; }
+        .hero-price-card > strong, .booking-price strong { display: block; color: #2a7a2a; font-size: 34px; line-height: 1; letter-spacing: -.8px; }
+        .hero-price-card > small, .booking-price small { color: #888; font-size: 14px; }
+        .hero-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .hero-mini-grid div { background: #f7f7f5; border: 1px solid #e5e5e0; border-radius: 12px; padding: 12px; }
+        .hero-mini-grid b { display: block; font-size: 15px; color: #111; }
+        .hero-mini-grid small { color: #777; }
+
+        .gallery-section { padding-bottom: 42px; }
+        .package-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 44px; align-items: start; padding-bottom: 82px; }
+        .package-main section { margin-bottom: 42px; }
+        .section-title { font-size: 26px; line-height: 1.2; letter-spacing: -.4px; margin: 0 0 18px; color: #111; }
+        .body-copy { font-size: 17px; line-height: 1.85; color: #444; margin-bottom: 14px; }
+
+        .quick-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .quick-card { border: 1px solid #e5e5e0; background: #fdfdfb; border-radius: 14px; padding: 16px; }
+        .quick-card span { display: block; color: #777; font-size: 13px; margin-bottom: 4px; }
+        .quick-card strong { color: #111; font-size: 16px; line-height: 1.35; }
+
+        .highlight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .highlight-card { background: #f0f7ee; border: 1px solid #c8e0c5; border-radius: 14px; padding: 20px; }
+        .accent-line { width: 38px; height: 4px; background: #2a7a2a; border-radius: 999px; margin-bottom: 13px; }
+        .highlight-card h3 { font-size: 17px; line-height: 1.35; margin-bottom: 8px; color: #111; }
+        .highlight-card p { font-size: 15px; line-height: 1.7; color: #444; }
+        .pill-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        .pill-list span { background: #f7f7f5; border: 1px solid #e5e5e0; border-radius: 999px; padding: 10px 14px; font-size: 15px; font-weight: 700; color: #333; }
+
+        .timeline { position: relative; padding-left: 22px; }
+        .timeline:before { content: ""; position: absolute; left: 6px; top: 7px; bottom: 7px; width: 2px; background: #e5e5e0; }
+        .timeline-item { position: relative; display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
+        .timeline-item:before { content: ""; position: absolute; left: -20px; top: 6px; width: 12px; height: 12px; border-radius: 99px; background: #2a7a2a; box-shadow: 0 0 0 3px #eaf5e8; }
+        .timeline-item time { font-size: 15px; font-weight: 850; color: #2a7a2a; }
+        .timeline-item p { font-size: 16px; line-height: 1.6; color: #333; }
+
+        .included-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .info-list { border-radius: 14px; padding: 20px; border: 1px solid #e5e5e0; }
+        .info-list.yes { background: #f0f7ee; border-color: #c8e0c5; }
+        .info-list.no { background: #fff8f5; border-color: #f0d0c0; }
+        .info-list h3 { font-size: 17px; margin-bottom: 12px; }
+        .info-list ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .info-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 15px; line-height: 1.55; color: #333; }
+        .info-list li span { font-weight: 900; flex-shrink: 0; }
+        .info-list.yes li span { color: #2a7a2a; }
+        .info-list.no li span { color: #c0602a; }
+
+        .simple-list { display: grid; gap: 10px; }
+        .simple-list div { background: #f7f7f5; border: 1px solid #e5e5e0; border-radius: 12px; padding: 14px 16px; font-size: 16px; line-height: 1.6; color: #333; }
+        .warning-list div { background: #fffaf0; border-color: #f0dfb8; }
+        .faq-list { display: grid; gap: 10px; }
+        .faq-list details { border: 1px solid #e5e5e0; border-radius: 12px; background: #fff; padding: 16px 18px; }
+        .faq-list summary { cursor: pointer; font-size: 16px; font-weight: 800; color: #111; }
+        .faq-list p { font-size: 15px; line-height: 1.7; color: #444; margin-top: 10px; }
+
+        .closing-cta { background: #102b15; color: #fff; border-radius: 18px; padding: 30px; }
+        .closing-cta h2 { font-size: 28px; line-height: 1.25; margin-bottom: 8px; }
+        .closing-cta p { color: rgba(255,255,255,.78); font-size: 16px; line-height: 1.7; margin-bottom: 18px; }
+        .closing-cta .primary-cta { background: #fff; color: #1e5c1e; }
+
+        .booking-card-wrap { position: sticky; top: 84px; }
+        .booking-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 18px; padding: 26px; box-shadow: 0 8px 30px rgba(0,0,0,.08); }
+        .booking-price { padding-bottom: 20px; border-bottom: 1px solid #f0f0eb; margin-bottom: 4px; }
+        .info-row { display: flex; justify-content: space-between; gap: 18px; padding: 12px 0; border-bottom: 1px solid #f0f0eb; font-size: 15px; }
+        .info-row span { color: #777; }
+        .info-row strong { color: #111; text-align: right; }
+        .meeting-box { padding: 14px 0; border-bottom: 1px solid #f0f0eb; }
+        .meeting-box span { display: block; color: #777; font-size: 14px; margin-bottom: 5px; }
+        .meeting-box p { color: #333; line-height: 1.6; font-size: 15px; }
+        .booking-btn { width: 100%; margin-top: 20px; }
+        .booking-note { text-align: center; color: #888; font-size: 13px; margin-top: 10px; }
+
+        .mobile-sticky-cta { display: none; }
+
+        @media (max-width: 920px) {
+          .package-hero, .package-content-grid { grid-template-columns: 1fr; }
+          .hero-price-card { display: none; }
+          .booking-card-wrap { position: static; }
+          .quick-card-grid { grid-template-columns: repeat(2, 1fr); }
+          .highlight-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+          .package-container { padding-left: 18px; padding-right: 18px; }
+          .package-hero { padding-top: 30px; gap: 20px; }
+          .package-hero h1 { font-size: 36px; letter-spacing: -1px; }
+          .package-tagline { font-size: 19px; }
+          .package-short, .body-copy { font-size: 16px; line-height: 1.75; }
+          .primary-cta, .secondary-cta { width: 100%; font-size: 16px; }
+          .gallery-section { padding-bottom: 32px; }
+          .quick-card-grid, .included-grid { grid-template-columns: 1fr; }
+          .quick-card strong { font-size: 17px; }
+          .section-title { font-size: 24px; }
+          .timeline-item { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; }
+          .timeline-item p { font-size: 15.5px; }
+          .booking-card-wrap { display: none; }
+          .mobile-sticky-cta { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #2a7a2a; color: #fff; border-radius: 14px; padding: 12px 16px; box-shadow: 0 10px 26px rgba(0,0,0,.22); text-decoration: none; }
+          .mobile-sticky-cta span { font-size: 13px; opacity: .88; }
+          .mobile-sticky-cta strong { font-size: 16px; }
         }
       `}</style>
     </>
   );
 }
 
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="section-title">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function InfoList({ title, items, type }: { title: string; items: string[]; type: "yes" | "no" }) {
+  return (
+    <div className={`info-list ${type}`}>
+      <h3>{type === "yes" ? "✓" : "✕"} {title}</h3>
+      <ul>
+        {items.map((item) => (
+          <li key={item}><span>{type === "yes" ? "✓" : "✕"}</span>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="info-row">
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
 function WaIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
     </svg>
   );
