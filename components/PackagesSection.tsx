@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import packages, { Package, PackageType } from "@/data/packages";
-import { waLink } from "@/lib/whatsapp";
 
 const filters: { label: string; value: "all" | PackageType }[] = [
   { label: "Semua", value: "all" },
@@ -55,15 +54,9 @@ function formatRupiah(n: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
 }
 
-function bookPackage(packageName: string, duration: string, price: string, priceUnit: string) {
-  return waLink(
-    `Halo SentulTrip 👋\n\nSaya tertarik dengan paket *${packageName}*.\n\nInfo yang saya butuhkan:\n- Harga: ${price}/${priceUnit}\n- Durasi: ${duration}\n\nBoleh konfirmasi ketersediaan jadwal dan detail fasilitasnya? Terima kasih.`
-  );
-}
 
 function PackageCard({ pkg }: { pkg: Package }) {
   const t = typeTheme[pkg.type];
-  const reviewText = pkg.reviews > 0 ? ` (${pkg.reviews})` : "";
   const hasImages = pkg.images && pkg.images.length > 0;
   const multipleImages = pkg.images && pkg.images.length > 1;
   const [imgIdx, setImgIdx] = useState(0);
@@ -232,9 +225,8 @@ function PackageCard({ pkg }: { pkg: Package }) {
         <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#111111", lineHeight: 1.3 }}>
           {pkg.name}
         </h3>
-        <div style={{ display: "flex", gap: "16px", fontSize: "13px", color: "#888888" }}>
+        <div style={{ fontSize: "13px", color: "#888888" }}>
           <span>{pkg.duration}</span>
-          <span>{pkg.rating}{reviewText}</span>
         </div>
 
         {/* Footer */}
@@ -252,19 +244,18 @@ function PackageCard({ pkg }: { pkg: Package }) {
             <div style={{ fontSize: "11px", color: "#aaa" }}>/{pkg.priceUnit}</div>
           </div>
           <a
-            href={bookPackage(pkg.name, pkg.duration, formatRupiah(pkg.price), pkg.priceUnit)}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`/paket/${pkg.slug}`}
             style={{
               backgroundColor: t.btnBg, color: "#ffffff",
-              border: "none", fontSize: "13px", fontWeight: 600,
+              fontSize: "13px", fontWeight: 600,
               padding: "7px 16px", borderRadius: "7px",
               whiteSpace: "nowrap", transition: "background-color 0.15s",
+              textDecoration: "none",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = t.btnHoverBg)}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = t.btnBg)}
           >
-            Book
+            Selengkapnya
           </a>
         </div>
       </div>
