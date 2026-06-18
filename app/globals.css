@@ -781,6 +781,31 @@ a {
   background: #f8faf9;
 }
 
+.admin-data-section {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid #e2e8e5;
+  border-radius: 28px;
+  background: #f8faf9;
+}
+
+.admin-data-title {
+  margin-top: 8px;
+  color: #0f172a;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+
+.admin-data-text {
+  margin-top: 8px;
+  max-width: 620px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+  font-weight: 700;
+}
+
 .admin-bank-detail-grid,
 .admin-bank-form-grid {
   display: grid;

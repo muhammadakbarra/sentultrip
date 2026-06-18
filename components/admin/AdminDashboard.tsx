@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { logoutAction } from "@/app/admin/actions";
 
-type MenuKey = "statistik" | "pesanan";
+type MenuKey = "statistik" | "pesanan" | "data";
 
 type AnalyticsSummary = {
   activeUsers: number;
@@ -66,6 +66,7 @@ type BankAccountState = {
 const menuItems: Array<{ key: MenuKey; label: string; icon: string; description: string }> = [
   { key: "statistik", label: "Statistik", icon: "📊", description: "Google Analytics" },
   { key: "pesanan", label: "Pesanan", icon: "🧾", description: "Booking pelanggan" },
+  { key: "data", label: "Data", icon: "🔐", description: "Credential rahasia" },
 ];
 
 function formatNumber(value?: number) {
@@ -81,14 +82,22 @@ function formatCurrency(value?: number) {
 }
 
 function formatDisplayDate(value: string) {
-  const dateOnly = value.slice(0, 10);
-  const [year, month, day] = dateOnly.split("-").map(Number);
+  if (!value) return "-";
+
+  const raw = String(value);
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const parsedDate = match
+    ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+    : new Date(raw);
+
+  if (Number.isNaN(parsedDate.getTime())) return raw;
+
   return new Intl.DateTimeFormat("id-ID", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(year, month - 1, day));
+  }).format(parsedDate);
 }
 
 export default function AdminDashboard({ username }: { username: string }) {
@@ -410,17 +419,78 @@ export default function AdminDashboard({ username }: { username: string }) {
               )}
             </div>
           </>
-        ) : (
-          <>
-            <div className="admin-content-card">
-              <div className="admin-content-header">
-                <div>
-                  <p className="admin-kicker">Payment Setting</p>
-                  <h2 className="admin-content-title">Detail Rekening</h2>
-                </div>
-                <div className="admin-content-icon">🏦</div>
+        ) : activeMenu === "pesanan" ? (
+          <div className="admin-content-card">
+            <div className="admin-content-header">
+              <div>
+                <p className="admin-kicker">Booking</p>
+                <h2 className="admin-content-title">Pesanan</h2>
               </div>
+              <div className="admin-content-icon">🧾</div>
+            </div>
 
+            {bookingsState.loading ? (
+              <div className="admin-placeholder">
+                <h3 className="admin-placeholder-title">Memuat pesanan...</h3>
+              </div>
+            ) : bookingsState.error ? (
+              <div className="admin-placeholder">
+                <h3 className="admin-placeholder-title">Pesanan Error</h3>
+                <p className="admin-stat-caption" style={{ marginTop: 12 }}>
+                  {bookingsState.error}
+                </p>
+              </div>
+            ) : bookingsState.bookings.length ? (
+              <div className="admin-booking-list">
+                {bookingsState.bookings.map((booking) => (
+                  <article className="admin-booking-card" key={booking.id}>
+                    <div>
+                      <p className="admin-booking-code">{booking.bookingCode}</p>
+                      <h3>{booking.packageName}</h3>
+                      <p className="admin-booking-customer">
+                        {[booking.firstName, booking.lastName].filter(Boolean).join(" ")} · {booking.email}
+                      </p>
+                    </div>
+                    <div className="admin-booking-meta">
+                      <span>{formatDisplayDate(booking.startDate)}</span>
+                      <strong>{formatCurrency(booking.totalAmount)}</strong>
+                    </div>
+                    <div className="admin-booking-detail-grid">
+                      <div><span>Trip Code</span><strong>{booking.tripCode}</strong></div>
+                      <div><span>Traveller</span><strong>Adult {booking.adultCount}</strong></div>
+                      <div><span>Harga Satuan</span><strong>{formatCurrency(booking.adultPrice)}</strong></div>
+                      <div><span>Nomor HP</span><strong>{booking.phone || "-"}</strong></div>
+                      <div><span>Kota</span><strong>{booking.city}, {booking.country}</strong></div>
+                      <div><span>Payment</span><strong>{booking.paymentMethod === "bank_transfer" ? "Bank Transfer" : booking.paymentMethod}</strong></div>
+                      <div><span>Status</span><strong>{booking.status}</strong></div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="admin-placeholder">
+                <h3 className="admin-placeholder-title">Belum ada pesanan</h3>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="admin-content-card">
+            <div className="admin-content-header">
+              <div>
+                <p className="admin-kicker">Data Rahasia</p>
+                <h2 className="admin-content-title">Data</h2>
+              </div>
+              <div className="admin-content-icon">🔐</div>
+            </div>
+
+            <div className="admin-data-section">
+              <div>
+                <p className="admin-kicker">Payment Credential</p>
+                <h3 className="admin-data-title">Detail Rekening</h3>
+                <p className="admin-data-text">
+                  Data ini disiapkan untuk kebutuhan internal seperti instruksi pembayaran booking.
+                </p>
+              </div>
               <BankAccountCard
                 state={bankAccountState}
                 onEdit={() => setBankAccountState((current) => ({ ...current, editing: true }))}
@@ -428,61 +498,7 @@ export default function AdminDashboard({ username }: { username: string }) {
                 onSave={saveBankAccount}
               />
             </div>
-
-            <div className="admin-content-card">
-              <div className="admin-content-header">
-                <div>
-                  <p className="admin-kicker">Booking</p>
-                  <h2 className="admin-content-title">Pesanan</h2>
-                </div>
-                <div className="admin-content-icon">🧾</div>
-              </div>
-
-              {bookingsState.loading ? (
-                <div className="admin-placeholder">
-                  <h3 className="admin-placeholder-title">Memuat pesanan...</h3>
-                </div>
-              ) : bookingsState.error ? (
-                <div className="admin-placeholder">
-                  <h3 className="admin-placeholder-title">Pesanan Error</h3>
-                  <p className="admin-stat-caption" style={{ marginTop: 12 }}>
-                    {bookingsState.error}
-                  </p>
-                </div>
-              ) : bookingsState.bookings.length ? (
-                <div className="admin-booking-list">
-                  {bookingsState.bookings.map((booking) => (
-                    <article className="admin-booking-card" key={booking.id}>
-                      <div>
-                        <p className="admin-booking-code">{booking.bookingCode}</p>
-                        <h3>{booking.packageName}</h3>
-                        <p className="admin-booking-customer">
-                          {[booking.firstName, booking.lastName].filter(Boolean).join(" ")} · {booking.email}
-                        </p>
-                      </div>
-                      <div className="admin-booking-meta">
-                        <span>{formatDisplayDate(booking.startDate)}</span>
-                        <strong>{formatCurrency(booking.totalAmount)}</strong>
-                      </div>
-                      <div className="admin-booking-detail-grid">
-                        <div><span>Trip Code</span><strong>{booking.tripCode}</strong></div>
-                        <div><span>Traveller</span><strong>Adult {booking.adultCount}</strong></div>
-                        <div><span>Harga Satuan</span><strong>{formatCurrency(booking.adultPrice)}</strong></div>
-                        <div><span>Nomor HP</span><strong>{booking.phone || "-"}</strong></div>
-                        <div><span>Kota</span><strong>{booking.city}, {booking.country}</strong></div>
-                        <div><span>Payment</span><strong>{booking.paymentMethod === "bank_transfer" ? "Bank Transfer" : booking.paymentMethod}</strong></div>
-                        <div><span>Status</span><strong>{booking.status}</strong></div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="admin-placeholder">
-                  <h3 className="admin-placeholder-title">Belum ada pesanan</h3>
-                </div>
-              )}
-            </div>
-          </>
+          </div>
         )}
       </section>
 

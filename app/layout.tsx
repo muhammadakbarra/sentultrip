@@ -101,7 +101,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${font.variable} h-full`}>
+    <html lang="id" className={`${font.variable} h-full`} data-scroll-behavior="smooth">
       <head>
         <script
           type="application/ld+json"
