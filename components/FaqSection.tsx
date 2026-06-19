@@ -6,7 +6,7 @@ import { waLink } from "@/lib/whatsapp";
 const faqs = [
   {
     q: "Apakah paket trekking cocok untuk pemula?",
-    a: "Ya. Sebagian besar rute trekking kami seperti Curug Bidadari dan Leuwi Asih memiliki tingkat kesulitan rendah hingga sedang. Guide akan menyesuaikan tempo dengan kondisi peserta. Kami juga menerima anak-anak di atas 8 tahun.",
+    a: "Ya. Sebagian besar rute trekking kami seperti Curug Bidadari dan Leuwi Asih memiliki tingkat kesulitan rendah hingga sedang. Guide akan menyesuaikan tempo dengan kondisi peserta. Kami juga menerima anak-anak di atas 3 tahun.",
   },
   {
     q: "Berapa jumlah minimal peserta untuk booking?",

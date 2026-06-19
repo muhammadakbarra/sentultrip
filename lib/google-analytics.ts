@@ -28,6 +28,22 @@ function getPrivateKey() {
   return key;
 }
 
+export function debugPrivateKey() {
+  const raw = process.env.GOOGLE_PRIVATE_KEY ?? "";
+  const processed = getPrivateKey() ?? "";
+  return {
+    rawLength: raw.length,
+    rawFirstChars: raw.slice(0, 30),
+    rawLastChars: raw.slice(-20),
+    processedLength: processed.length,
+    processedFirstChars: processed.slice(0, 40),
+    startsWithHeader: processed.startsWith("-----BEGIN PRIVATE KEY-----"),
+    endsWithFooter: processed.trimEnd().endsWith("-----END PRIVATE KEY-----"),
+    newlineCount: (processed.match(/\n/g) ?? []).length,
+    hasEscapedNewlines: raw.includes("\\n"),
+  };
+}
+
 function getAnalyticsClient() {
   if (!analyticsClient) {
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
