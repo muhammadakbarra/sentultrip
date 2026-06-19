@@ -39,7 +39,7 @@ const packageDetails: PackageDetail[] = [
     locationArea: "Bojong Koneng, Babakan Madang, Bogor",
     routeType: "Hutan, sungai berbatu, area curug",
     bestTime: "Pagi hari, mulai 07.00–08.00",
-    suitableFor: ["Pemula aktif", "Komunitas", "Outing kantor", "Keluarga dengan anak 8+"],
+    suitableFor: ["Pemula aktif", "Komunitas", "Outing kantor", "Keluarga dengan anak 3+"],
     description: [
       "Curug Cibingbin cocok untuk peserta yang ingin trekking ringan tapi tetap terasa petualangannya. Jalurnya melewati perkampungan, area hijau, sungai berbatu, dan beberapa titik curug yang bisa jadi tempat istirahat, foto, atau main air.",
       "Rute dapat menyesuaikan kondisi cuaca dan kemampuan peserta. Umumnya perjalanan mencakup Curug Cibingbin, Curug 3 Perjaka, Curug Ngumpet, dan spot sungai/curug lain di kawasan sekitar.",
@@ -118,7 +118,7 @@ const packageDetails: PackageDetail[] = [
     locationArea: "Bojong Koneng, Babakan Madang, Bogor",
     routeType: "Perkampungan, area hijau, sungai kecil, curug",
     bestTime: "Pagi hari sebelum area ramai",
-    suitableFor: ["Keluarga", "Anak-anak 6+", "Pemula", "Grup santai"],
+    suitableFor: ["Keluarga", "Anak-anak 3+", "Pemula", "Grup santai"],
     description: [
       "Curug Bidadari adalah pilihan yang lebih santai untuk menikmati alam Sentul. Jalurnya relatif ringan, pemandangannya variatif, dan tujuan utamanya adalah air terjun besar dengan area bermain air yang cocok untuk keluarga.",
       "Paket ini pas untuk peserta yang baru pertama kali trekking, rombongan keluarga, atau grup yang ingin aktivitas alam tanpa jalur terlalu menantang.",

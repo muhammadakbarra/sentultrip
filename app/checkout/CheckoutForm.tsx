@@ -22,14 +22,14 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount }: Che
       {state.error ? <div className="checkout-error">{state.error}</div> : null}
 
       <section className="checkout-card">
-        <h2>Billing Detail</h2>
+        <h2>Detail Pemesan</h2>
         <div className="checkout-grid two">
           <label>
-            First Name
+            Nama Depan
             <input name="firstName" required />
           </label>
           <label>
-            Last Name
+            Nama Belakang
             <input name="lastName" />
           </label>
         </div>
@@ -44,27 +44,27 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount }: Che
           </label>
         </div>
         <label>
-          Address
+          Alamat
           <textarea name="address" rows={4} required />
         </label>
         <div className="checkout-grid two">
           <label>
-            City
+            Kota
             <input name="city" required />
           </label>
           <label>
-            Country
+            Negara
             <input name="country" defaultValue="Indonesia" required />
           </label>
         </div>
       </section>
 
       <section className="checkout-card">
-        <h2>Payment</h2>
+        <h2>Pembayaran</h2>
         <label className="payment-option">
           <input type="radio" name="paymentMethod" value="bank_transfer" defaultChecked />
           <span>
-            <strong>Bank Transfer</strong>
+            <strong>Transfer Bank</strong>
             <small>Instruksi pembayaran akan dikonfirmasi oleh admin SentulTrip.</small>
           </span>
         </label>
@@ -74,12 +74,12 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount }: Che
         <input type="checkbox" name="acceptedTerms" required />
         <span>
           Saya mengonfirmasi bahwa saya telah membaca dan menyetujui syarat dan ketentuan kami,
-          terms and conditions and privacy policy.
+          syarat & ketentuan dan kebijakan privasi.
         </span>
       </label>
 
       <button type="submit" className="confirm-booking-btn" disabled={pending}>
-        {pending ? "Memproses..." : "Confirm Booking"}
+        {pending ? "Memproses..." : "Pesan Sekarang"}
       </button>
     </form>
   );

@@ -192,7 +192,7 @@ export default async function PackageDetailPage({
               <InfoRow label="Waktu terbaik" value={detail.bestTime} />
 
               <div className="meeting-box">
-                <span>Meeting Point</span>
+                <span>Titik Kumpul</span>
                 <p>{detail.meetingPoint}</p>
               </div>
 

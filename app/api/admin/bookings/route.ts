@@ -4,7 +4,7 @@ import { listBookings } from "@/lib/bookings";
 
 export async function GET() {
   const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 });
 
   try {
     const bookings = await listBookings();

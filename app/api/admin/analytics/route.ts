@@ -1,11 +1,18 @@
+import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/admin-auth";
 import { getAnalyticsSummary, hasAnalyticsConfig } from "@/lib/google-analytics";
 
+const getCachedAnalytics = unstable_cache(
+  getAnalyticsSummary,
+  ["ga-analytics-summary"],
+  { revalidate: 300 }, // cache 5 menit — 11 GA4 queries hanya fire sekali per 5 menit
+);
+
 export async function GET() {
   const session = await getAdminSession();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 });
   }
 
   if (!hasAnalyticsConfig()) {
@@ -20,7 +27,7 @@ export async function GET() {
   }
 
   try {
-    const summary = await getAnalyticsSummary();
+    const summary = await getCachedAnalytics();
     return NextResponse.json({ setupRequired: false, summary });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Gagal mengambil data analytics.";

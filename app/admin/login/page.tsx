@@ -11,7 +11,7 @@ export default async function AdminLoginPage() {
       <section className="admin-login-card">
         <div className="admin-login-brand">
           <div className="admin-login-logo">ST</div>
-          <h1 className="admin-login-title">Admin Login</h1>
+          <h1 className="admin-login-title">Login Admin</h1>
         </div>
 
         <LoginForm />

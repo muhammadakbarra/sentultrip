@@ -4,7 +4,7 @@ import { getBankAccount, upsertBankAccount } from "@/lib/bank-account";
 
 export async function GET() {
   const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 });
 
   try {
     const bankAccount = await getBankAccount();
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const session = await getAdminSession();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 });
 
   try {
     const body = await request.json();

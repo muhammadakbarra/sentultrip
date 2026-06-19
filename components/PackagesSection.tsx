@@ -8,7 +8,7 @@ const filters: { label: string; value: "all" | PackageType }[] = [
   { label: "Semua", value: "all" },
   { label: "Trekking", value: "trekking" },
   { label: "Offroad", value: "offroad" },
-  { label: "Corporate", value: "corporate" },
+  { label: "Korporat", value: "corporate" },
   { label: "Live-in", value: "livein" },
 ];
 
@@ -40,7 +40,7 @@ const typeTheme: Record<
   },
   corporate: {
     cardBg: "#eef3fa", cardBorder: "#c0d0e8", imgBg: "#d8e5f5", imgTextColor: "#2c5282",
-    badgeBg: "#2c5282", badgeText: "#ffffff", badgeLabel: "Corporate",
+    badgeBg: "#2c5282", badgeText: "#ffffff", badgeLabel: "Korporat",
     priceColor: "#2c5282", btnBg: "#2c5282", btnHoverBg: "#1e3a5f", placeholderText: "Corporate Outing",
   },
   livein: {

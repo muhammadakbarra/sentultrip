@@ -7,7 +7,7 @@ import { waLink } from "@/lib/whatsapp";
 const navLinks = [
   { label: "Paket", href: "#paket" },
   { label: "Aktivitas", href: "#aktivitas" },
-  { label: "Gallery", href: "#gallery" },
+  { label: "Galeri", href: "#gallery" },
   { label: "Tentang Kami", href: "#tentang" },
   { label: "Kontak", href: "#kontak" },
 ];

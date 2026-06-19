@@ -83,23 +83,23 @@ export default async function CheckoutPage({
       <main className="checkout-page">
         <div className="checkout-container">
           <section className="checkout-form-section">
-            <p className="checkout-kicker">Checkout</p>
+            <p className="checkout-kicker">Pemesanan</p>
             <h1>Lengkapi Data Booking</h1>
             <CheckoutForm packageSlug={detail.slug} startDate={startDate} adultCount={adultCount} />
           </section>
 
           <aside className="tour-details-card">
-            <p className="checkout-kicker">Tour Details</p>
+            <p className="checkout-kicker">Detail Perjalanan</p>
             <h2>{detail.name}</h2>
-            <DetailRow label="Package" value="Adult" />
-            <DetailRow label="Trip Code" value={tripCode} />
-            <DetailRow label="Starts On" value={displayStartDate} />
-            <DetailRow label="Ends On" value={displayStartDate} />
-            <DetailRow label="No of Travellers" value={`${adultCount} traveller(s)`} />
+            <DetailRow label="Paket" value="Dewasa" />
+            <DetailRow label="Kode Trip" value={tripCode} />
+            <DetailRow label="Tanggal Mulai" value={displayStartDate} />
+            <DetailRow label="Tanggal Selesai" value={displayStartDate} />
+            <DetailRow label="Jumlah Peserta" value={`${adultCount} peserta`} />
 
             <div className="tour-price-line">
-              <span>Package traveller(s)</span>
-              <strong>Adult × {adultCount}</strong>
+              <span>Peserta Paket</span>
+              <strong>Dewasa × {adultCount}</strong>
             </div>
             <div className="tour-price-line">
               <span>Harga satuan</span>

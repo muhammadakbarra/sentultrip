@@ -77,7 +77,7 @@ export default function FaqSection() {
             marginBottom: "12px",
           }}
         >
-          FAQ
+          Tanya Jawab
         </p>
 
         <h2

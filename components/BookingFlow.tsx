@@ -181,17 +181,17 @@ export default function BookingFlow({ packageSlug, packageName, price }: Booking
                 </div>
 
                 <button type="button" className="booking-modal-primary" onClick={() => setStep("travellers")}>
-                  Continue
+                  Lanjutkan
                 </button>
               </div>
             ) : (
               <div>
-                <p className="booking-modal-kicker">Package Type</p>
+                <p className="booking-modal-kicker">Tipe Paket</p>
                 <h2 className="booking-modal-title">Pilih jumlah traveller</h2>
 
                 <div className="package-type-card">
                   <div>
-                    <h3>Adult</h3>
+                    <h3>Dewasa</h3>
                     <p>{formatPrice(price)} / orang</p>
                     <small>Minimum pemesanan 3 orang</small>
                   </div>
@@ -203,9 +203,9 @@ export default function BookingFlow({ packageSlug, packageName, price }: Booking
                 </div>
 
                 <div className="booking-summary-box">
-                  <h3>Booking Summary</h3>
+                  <h3>Ringkasan Pemesanan</h3>
                   <div><span>Nama Paket</span><strong>{packageName}</strong></div>
-                  <div><span>Starting Date</span><strong>{formatDisplayDate(startDate)}</strong></div>
+                  <div><span>Tanggal Mulai</span><strong>{formatDisplayDate(startDate)}</strong></div>
                   <div><span>Total</span><strong>{formatPrice(total)}</strong></div>
                 </div>
 
