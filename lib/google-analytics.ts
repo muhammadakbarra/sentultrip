@@ -21,8 +21,9 @@ let analyticsClient: BetaAnalyticsDataClient | null = null;
 function getPrivateKey() {
   let key = process.env.GOOGLE_PRIVATE_KEY;
   if (!key) return undefined;
-  // Convert escaped newlines to real newlines first
-  key = key.replace(/\\n/g, "\n");
+  // Handle double-escaped (\\n) first, then single-escaped (\n)
+  // Coolify stores the value with \\n (two backslashes + n) instead of \n
+  key = key.replace(/\\\\n/g, "\n").replace(/\\n/g, "\n");
   // Extract just the PEM block — strips any surrounding quotes, backslashes,
   // or other garbage added by Coolify/Docker env var handling
   const start = key.indexOf("-----BEGIN");
