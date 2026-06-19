@@ -21,10 +21,15 @@ let analyticsClient: BetaAnalyticsDataClient | null = null;
 function getPrivateKey() {
   let key = process.env.GOOGLE_PRIVATE_KEY;
   if (!key) return undefined;
-  // Strip surrounding quotes that some deployment UIs accidentally include
-  key = key.replace(/^["']|["']$/g, "");
-  // Normalize escaped newlines (common from .env files and some platforms)
+  // Convert escaped newlines to real newlines first
   key = key.replace(/\\n/g, "\n");
+  // Extract just the PEM block — strips any surrounding quotes, backslashes,
+  // or other garbage added by Coolify/Docker env var handling
+  const start = key.indexOf("-----BEGIN");
+  const end = key.lastIndexOf("-----") + 5;
+  if (start !== -1 && end > start) {
+    key = key.slice(start, end);
+  }
   return key;
 }
 
