@@ -19,7 +19,13 @@ export type AnalyticsSummary = {
 let analyticsClient: BetaAnalyticsDataClient | null = null;
 
 function getPrivateKey() {
-  return process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  let key = process.env.GOOGLE_PRIVATE_KEY;
+  if (!key) return undefined;
+  // Strip surrounding quotes that some deployment UIs accidentally include
+  key = key.replace(/^["']|["']$/g, "");
+  // Normalize escaped newlines (common from .env files and some platforms)
+  key = key.replace(/\\n/g, "\n");
+  return key;
 }
 
 function getAnalyticsClient() {
