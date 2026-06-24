@@ -50,7 +50,7 @@ export default function Navbar() {
       style={{
         position: "sticky",
         top: 0,
-        zIndex: 50,
+        zIndex: 100,
         backgroundColor: "#ffffff",
         borderBottom: "1px solid #e5e5e0",
         boxShadow: scrolled ? "0 1px 12px rgba(0,0,0,0.08)" : "none",

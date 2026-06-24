@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -65,11 +65,14 @@ type Booking = {
   adultCount: number;
   childCount: number;
   adultPrice: number;
+  nasiLiwetCount: number;
+  pickupCount: number;
   totalAmount: number;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  address: string;
   city: string;
   country: string;
   paymentMethod: string;
@@ -98,10 +101,41 @@ type BankAccountState = {
   bankAccount?: BankAccount | null;
 };
 
-const menuItems: Array<{ key: MenuKey; label: string; icon: string; description: string }> = [
-  { key: "statistik", label: "Statistik", icon: "📊", description: "Google Analytics" },
-  { key: "pesanan", label: "Pesanan", icon: "🧾", description: "Booking pelanggan" },
-  { key: "data", label: "Data", icon: "🔐", description: "Credential rahasia" },
+const IconChart = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+  </svg>
+);
+const IconClipboard = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+    <rect x="8" y="2" width="8" height="4" rx="1"/>
+    <line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/>
+  </svg>
+);
+const IconLock = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+  </svg>
+);
+const IconSidebarClose = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
+    <path d="M15 9l-3 3 3 3"/>
+  </svg>
+);
+const IconSidebarOpen = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
+    <path d="M13 9l3 3-3 3"/>
+  </svg>
+);
+
+const menuItems: Array<{ key: MenuKey; label: string; icon: ReactNode; description: string }> = [
+  { key: "statistik", label: "Statistik", icon: <IconChart />, description: "Google Analytics" },
+  { key: "pesanan", label: "Pesanan", icon: <IconClipboard />, description: "Booking pelanggan" },
+  { key: "data", label: "Data", icon: <IconLock />, description: "Credential rahasia" },
 ];
 
 function formatNumber(value?: number) {
@@ -135,8 +169,36 @@ function formatDisplayDate(value: string) {
   }).format(parsedDate);
 }
 
-export default function AdminDashboard({ username }: { username: string }) {
-  const [activeMenu, setActiveMenu] = useState<MenuKey>("statistik");
+function formatShortDate(value: string) {
+  if (!value) return "-";
+  const raw = String(value);
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return raw;
+  const d = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  if (Number.isNaN(d.getTime())) return raw;
+  return new Intl.DateTimeFormat("id-ID", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).format(d);
+}
+
+function toWaLink(phone: string, packageName: string, bookingCode: string) {
+  let num = phone.replace(/\D/g, "");
+  if (num.startsWith("0")) num = "62" + num.slice(1);
+  else if (!num.startsWith("62")) num = "62" + num;
+  const msg = encodeURIComponent(
+    `Halo, kami dari SentulTrip.id menghubungi terkait pesanan paket ${packageName} (Kode Booking: ${bookingCode}). Ada yang bisa kami bantu?`
+  );
+  return `https://wa.me/${num}?text=${msg}`;
+}
+
+export default function AdminDashboard({ username, initialMenu = "statistik" }: { username: string; initialMenu?: MenuKey }) {
+  const [activeMenu, setActiveMenu] = useState<MenuKey>(initialMenu);
+
+  function navigate(key: MenuKey) {
+    setActiveMenu(key);
+    const path = key === "statistik" ? "/admin/dashboard" : `/admin/dashboard/${key}`;
+    window.history.pushState(null, "", path);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [analytics, setAnalytics] = useState<AnalyticsState>({
     loading: true,
@@ -312,7 +374,7 @@ export default function AdminDashboard({ username }: { username: string }) {
 
   return (
     <main className="admin-shell">
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar${sidebarOpen ? "" : " collapsed"}`}>
         <div className="admin-sidebar-panel">
           <div className="admin-sidebar-brand">
             <div className="admin-sidebar-logo">ST</div>
@@ -329,7 +391,7 @@ export default function AdminDashboard({ username }: { username: string }) {
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => setActiveMenu(item.key)}
+                  onClick={() => navigate(item.key)}
                   className={`admin-nav-button${isActive ? " active" : ""}`}
                 >
                   <div className="admin-nav-row">
@@ -361,9 +423,19 @@ export default function AdminDashboard({ username }: { username: string }) {
       <section className="admin-main">
         <header className="admin-topbar">
           <div className="admin-topbar-row">
-            <div>
-              <p className="admin-kicker">Dashboard</p>
-              <h1 className="admin-page-title">{active.label}</h1>
+            <div className="admin-topbar-left">
+              <button
+                type="button"
+                className="admin-toggle-btn"
+                onClick={() => setSidebarOpen((o) => !o)}
+                aria-label={sidebarOpen ? "Tutup sidebar" : "Buka sidebar"}
+              >
+                {sidebarOpen ? <IconSidebarClose /> : <IconSidebarOpen />}
+              </button>
+              <div>
+                <p className="admin-kicker">Dashboard</p>
+                <h1 className="admin-page-title">{active.label}</h1>
+              </div>
             </div>
             <div className="admin-status-pill">Online</div>
           </div>
@@ -373,7 +445,7 @@ export default function AdminDashboard({ username }: { username: string }) {
               <button
                 key={item.key}
                 type="button"
-                onClick={() => setActiveMenu(item.key)}
+                onClick={() => navigate(item.key)}
                 className={`admin-mobile-nav-button${item.key === activeMenu ? " active" : ""}`}
               >
                 {item.icon} {item.label}
@@ -698,31 +770,61 @@ export default function AdminDashboard({ username }: { username: string }) {
                 </p>
               </div>
             ) : bookingsState.bookings.length ? (
-              <div className="admin-booking-list">
-                {bookingsState.bookings.map((booking) => (
-                  <article className="admin-booking-card" key={booking.id}>
-                    <div>
-                      <p className="admin-booking-code">{booking.bookingCode}</p>
-                      <h3>{booking.packageName}</h3>
-                      <p className="admin-booking-customer">
-                        {[booking.firstName, booking.lastName].filter(Boolean).join(" ")} · {booking.email}
-                      </p>
-                    </div>
-                    <div className="admin-booking-meta">
-                      <span>{formatDisplayDate(booking.startDate)}</span>
-                      <strong>{formatCurrency(booking.totalAmount)}</strong>
-                    </div>
-                    <div className="admin-booking-detail-grid">
-                      <div><span>Kode Trip</span><strong>{booking.tripCode}</strong></div>
-                      <div><span>Peserta</span><strong>Dewasa {booking.adultCount}</strong></div>
-                      <div><span>Harga Satuan</span><strong>{formatCurrency(booking.adultPrice)}</strong></div>
-                      <div><span>Nomor HP</span><strong>{booking.phone || "-"}</strong></div>
-                      <div><span>Kota</span><strong>{booking.city}, {booking.country}</strong></div>
-                      <div><span>Pembayaran</span><strong>{booking.paymentMethod === "bank_transfer" ? "Transfer Bank" : booking.paymentMethod}</strong></div>
-                      <div><span>Status</span><strong>{booking.status}</strong></div>
-                    </div>
-                  </article>
-                ))}
+              <div className="admin-booking-table-wrap">
+                <table className="admin-booking-table">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Kode</th>
+                      <th>Nama &amp; Email</th>
+                      <th>Paket</th>
+                      <th>Tgl Trip</th>
+                      <th>Peserta</th>
+                      <th>Total</th>
+                      <th>Nomor HP</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookingsState.bookings.map((booking, i) => (
+                      <tr key={booking.id}>
+                        <td className="admin-bt-num">{i + 1}</td>
+                        <td className="admin-bt-code">{booking.bookingCode}</td>
+                        <td>
+                          <div className="admin-bt-name">{[booking.firstName, booking.lastName].filter(Boolean).join(" ")}</div>
+                          <div className="admin-bt-email">{booking.email}</div>
+                        </td>
+                        <td>{booking.packageName}</td>
+                        <td>{formatShortDate(booking.startDate)}</td>
+                        <td>
+                          <div className="admin-bt-name">{booking.adultCount}D{booking.childCount > 0 ? ` · ${booking.childCount}A` : ""}</div>
+                          {(booking.nasiLiwetCount > 0 || booking.pickupCount > 0) && (
+                            <div className="admin-bt-addons">
+                              {booking.nasiLiwetCount > 0 && <span>🍱 {booking.nasiLiwetCount}p</span>}
+                              {booking.pickupCount > 0 && <span>🚐 {booking.pickupCount}</span>}
+                            </div>
+                          )}
+                        </td>
+                        <td className="admin-bt-total">{formatCurrency(booking.totalAmount)}</td>
+                        <td>
+                          {booking.phone ? (
+                            <a
+                              href={toWaLink(booking.phone, booking.packageName, booking.bookingCode)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="admin-bt-wa"
+                            >
+                              {booking.phone}
+                            </a>
+                          ) : "-"}
+                        </td>
+                        <td>
+                          <span className={`admin-bt-status ${booking.status}`}>{booking.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <div className="admin-placeholder">

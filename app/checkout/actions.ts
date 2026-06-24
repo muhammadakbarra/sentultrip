@@ -52,9 +52,21 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
       throw new Error("Mohon setujui syarat, ketentuan, dan privacy policy.");
     }
 
+    const nasiLiwetCount = Number(formData.get("nasiLiwetCount") || 0);
+    const pickupCount = Number(formData.get("pickupCount") || 0);
+
     const adultPrice = detail.price;
-    const childPrice = 0;
-    const totalAmount = adultCount * adultPrice + childCount * childPrice;
+    const childPrice = detail.price - 20000;
+    const nasiLiwetPrice = nasiLiwetCount > 0 ? 50000 : 0;
+    const pickupPrice = pickupCount > 0
+      ? (["curug-bidadari", "curug-cibingbin"].includes(packageSlug) ? 300000 : 400000)
+      : 0;
+
+    const totalAmount =
+      adultCount * adultPrice +
+      childCount * childPrice +
+      nasiLiwetCount * nasiLiwetPrice +
+      pickupCount * pickupPrice;
 
     const booking = await createBooking({
       packageSlug,
@@ -66,14 +78,18 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
       childCount,
       adultPrice,
       childPrice,
+      nasiLiwetCount,
+      nasiLiwetPrice,
+      pickupCount,
+      pickupPrice,
       totalAmount,
-      firstName: required(formData, "firstName"),
-      lastName: String(formData.get("lastName") || "").trim(),
+      firstName: required(formData, "fullName"),
+      lastName: "",
       email: required(formData, "email"),
       phone: required(formData, "phone"),
       address: required(formData, "address"),
-      city: required(formData, "city"),
-      country: required(formData, "country"),
+      city: "",
+      country: "Indonesia",
       paymentMethod: "bank_transfer",
     });
 

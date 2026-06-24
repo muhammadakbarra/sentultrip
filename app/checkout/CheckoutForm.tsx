@@ -7,9 +7,12 @@ type CheckoutFormProps = {
   packageSlug: string;
   startDate: string;
   adultCount: number;
+  childCount: number;
+  nasiLiwetCount: number;
+  pickupCount: number;
 };
 
-export default function CheckoutForm({ packageSlug, startDate, adultCount }: CheckoutFormProps) {
+export default function CheckoutForm({ packageSlug, startDate, adultCount, childCount, nasiLiwetCount, pickupCount }: CheckoutFormProps) {
   const [state, formAction, pending] = useActionState(confirmBookingAction, {});
 
   return (
@@ -17,46 +20,32 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount }: Che
       <input type="hidden" name="packageSlug" value={packageSlug} />
       <input type="hidden" name="startDate" value={startDate} />
       <input type="hidden" name="adultCount" value={adultCount} />
-      <input type="hidden" name="childCount" value={0} />
+      <input type="hidden" name="childCount" value={childCount} />
+      <input type="hidden" name="nasiLiwetCount" value={nasiLiwetCount} />
+      <input type="hidden" name="pickupCount" value={pickupCount} />
 
       {state.error ? <div className="checkout-error">{state.error}</div> : null}
 
       <section className="checkout-card">
         <h2>Detail Pemesan</h2>
+        <label>
+          Nama Lengkap
+          <input name="fullName" required />
+        </label>
         <div className="checkout-grid two">
           <label>
-            Nama Depan
-            <input name="firstName" required />
+            Nomor HP
+            <input name="phone" type="tel" placeholder="08xxxxxxxxxx" required />
           </label>
-          <label>
-            Nama Belakang
-            <input name="lastName" />
-          </label>
-        </div>
-        <div className="checkout-grid two">
           <label>
             Email
             <input name="email" type="email" required />
-          </label>
-          <label>
-            Nomor HP
-            <input name="phone" type="tel" required />
           </label>
         </div>
         <label>
           Alamat
           <textarea name="address" rows={4} required />
         </label>
-        <div className="checkout-grid two">
-          <label>
-            Kota
-            <input name="city" required />
-          </label>
-          <label>
-            Negara
-            <input name="country" defaultValue="Indonesia" required />
-          </label>
-        </div>
       </section>
 
       <section className="checkout-card">

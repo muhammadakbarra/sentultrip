@@ -238,7 +238,12 @@ function PackageCard({ pkg }: { pkg: Package }) {
           }}
         >
           <div>
-            <div style={{ fontSize: "18px", fontWeight: 700, color: t.priceColor }}>
+            {pkg.marketPrice && (
+              <div style={{ fontSize: "12px", color: "#b0b0b0", textDecoration: "line-through", fontWeight: 600, lineHeight: 1.2 }}>
+                {formatRupiah(pkg.marketPrice)}
+              </div>
+            )}
+            <div style={{ fontSize: "18px", fontWeight: 700, color: t.priceColor, lineHeight: 1.2 }}>
               {formatRupiah(pkg.price)}
             </div>
             <div style={{ fontSize: "11px", color: "#aaa" }}>/{pkg.priceUnit}</div>

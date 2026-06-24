@@ -4,6 +4,7 @@ export interface PackageDetail {
   tagline: string;
   shortDescription: string;
   price: number;
+  marketPrice?: number;
   duration: string;
   distance?: string;
   locationArea: string;
@@ -34,6 +35,7 @@ const packageDetails: PackageDetail[] = [
     shortDescription:
       "Paket trekking Sentul untuk kamu yang ingin jalur lebih variatif: hutan, sungai berbatu, dan beberapa spot air terjun dalam satu perjalanan.",
     price: 150000,
+    marketPrice: 200000,
     duration: "±5–6 jam",
     distance: "±4–6 km",
     locationArea: "Bojong Koneng, Babakan Madang, Bogor",
@@ -113,6 +115,7 @@ const packageDetails: PackageDetail[] = [
     shortDescription:
       "Paket trekking ringan menuju Curug Bidadari Sentul. Cocok untuk keluarga, anak-anak, dan peserta pemula yang ingin main air tanpa jalur terlalu berat.",
     price: 150000,
+    marketPrice: 200000,
     duration: "±3–4 jam",
     distance: "±3–4 km",
     locationArea: "Bojong Koneng, Babakan Madang, Bogor",

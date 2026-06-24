@@ -7,6 +7,7 @@ export interface Package {
   type: PackageType;
   duration: string;
   price: number;
+  marketPrice?: number;
   priceUnit: string;
   rating: number;
   reviews: number;
@@ -17,14 +18,14 @@ export interface Package {
 const packages: Package[] = [
   {
     id: 1, slug: "curug-cibingbin", name: "Trekking Curug Cibingbin", type: "trekking", duration: "5 Jam",
-    price: 150000, priceUnit: "orang", rating: 4.9, reviews: 57, badge: "POPULER",
+    price: 150000, marketPrice: 200000, priceUnit: "orang", rating: 4.9, reviews: 57, badge: "POPULER",
     images: ["/produk/curug-cibingbin/1.jpeg", "/produk/curug-cibingbin/2.jpeg", "/produk/curug-cibingbin/3.jpeg"],
   },
   // { id: 2, slug: "leuwi-hejo", name: "Trekking Leuwi Hejo", type: "trekking", duration: "6 Jam", price: 180000, priceUnit: "orang", rating: 4.9, reviews: 54, images: ["/produk/leuwi-hejo.webp", "/produk/leuwi-hejo2.webp"] },
   // { id: 3, slug: "trekking-corporate", name: "Trekking Corporate", type: "corporate", duration: "7 Jam", price: 270000, priceUnit: "orang", rating: 4.9, reviews: 0 },
   {
     id: 4, slug: "curug-bidadari", name: "Trekking Curug Bidadari", type: "trekking", duration: "4 Jam",
-    price: 150000, priceUnit: "orang", rating: 4.8, reviews: 54,
+    price: 150000, marketPrice: 200000, priceUnit: "orang", rating: 4.8, reviews: 54,
     images: ["/produk/curug-bidadari/1.jpeg", "/produk/curug-bidadari/2.jpeg", "/produk/curug-bidadari/3.jpeg"],
   },
   // { id: 5, name: "Offroad Curug Bidadari", type: "offroad", duration: "3 Jam", price: 1250000, priceUnit: "jeep", rating: 4.8, reviews: 54, images: ["/produk/curug-bidadari.webp", "/produk/curug-bidadari2.webp", "/produk/curug-bidadari3.webp"] },

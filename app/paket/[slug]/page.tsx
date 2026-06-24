@@ -42,6 +42,7 @@ export default async function PackageDetailPage({
   if (!detail) notFound();
 
   const price = formatPrice(detail.price);
+  const marketPrice = detail.marketPrice ? formatPrice(detail.marketPrice) : null;
 
   const quickInfo = [
     { label: "Durasi", value: detail.duration },
@@ -74,13 +75,14 @@ export default async function PackageDetailPage({
             <p className="package-short">{detail.shortDescription}</p>
 
             <div className="hero-actions">
-              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} />
+              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} marketPrice={detail.marketPrice} />
               <a href="#detail-paket" className="secondary-cta">Lihat Detail</a>
             </div>
           </div>
 
           <aside className="hero-price-card">
             <span>Mulai dari</span>
+            {marketPrice && <s className="hero-market-price">{marketPrice}</s>}
             <strong>{price}</strong>
             <small>per orang</small>
             <div className="hero-mini-grid">
@@ -173,7 +175,7 @@ export default async function PackageDetailPage({
             <section className="closing-cta">
               <h2>Siap trekking ke {detail.name.replace("Trekking ", "")}?</h2>
               <p>Tanya jadwal dulu juga boleh. Tim SentulTrip akan bantu pilih waktu dan rute yang paling pas.</p>
-              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} />
+              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} marketPrice={detail.marketPrice} />
             </section>
           </div>
 
@@ -181,6 +183,7 @@ export default async function PackageDetailPage({
             <div className="booking-card">
               <div className="booking-price">
                 <span>Harga mulai dari</span>
+                {marketPrice && <s className="hero-market-price">{marketPrice}</s>}
                 <strong>{price}</strong>
                 <small>per orang</small>
               </div>
@@ -196,7 +199,7 @@ export default async function PackageDetailPage({
                 <p>{detail.meetingPoint}</p>
               </div>
 
-              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} />
+              <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} marketPrice={detail.marketPrice} />
               <p className="booking-note">Respon cepat · Bisa tanya dulu sebelum booking</p>
             </div>
           </aside>
@@ -204,8 +207,11 @@ export default async function PackageDetailPage({
       </main>
 
       <div className="mobile-sticky-cta-wrap">
-        <span>{price}/orang</span>
-        <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} />
+        <span>
+          {marketPrice && <s style={{ color: "#b0b0b0", fontSize: "12px", marginRight: "6px" }}>{marketPrice}</s>}
+          {price}/orang
+        </span>
+        <BookingFlow packageSlug={detail.slug} packageName={detail.name} price={detail.price} marketPrice={detail.marketPrice} />
       </div>
 
       <Footer />
@@ -232,6 +238,7 @@ export default async function PackageDetailPage({
 
         .hero-price-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.07); }
         .hero-price-card > span, .booking-price span { display: block; color: #777; font-size: 14px; margin-bottom: 4px; }
+        .hero-market-price { display: block; color: #b0b0b0; font-size: 15px; font-weight: 600; text-decoration: line-through; margin-bottom: 2px; }
         .hero-price-card > strong, .booking-price strong { display: block; color: #2a7a2a; font-size: 34px; line-height: 1; letter-spacing: -.8px; }
         .hero-price-card > small, .booking-price small { color: #888; font-size: 14px; }
         .hero-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }

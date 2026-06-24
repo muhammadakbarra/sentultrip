@@ -14,6 +14,10 @@ export type Booking = {
   childCount: number;
   adultPrice: number;
   childPrice: number;
+  nasiLiwetCount: number;
+  nasiLiwetPrice: number;
+  pickupCount: number;
+  pickupPrice: number;
   totalAmount: number;
   firstName: string;
   lastName: string;
@@ -76,6 +80,17 @@ export async function ensureBookingSchema() {
   `);
   await getPool().query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS phone TEXT NOT NULL DEFAULT ''");
   await getPool().query("ALTER TABLE bookings ALTER COLUMN last_name SET DEFAULT ''");
+  await getPool().query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS nasi_liwet_count INTEGER NOT NULL DEFAULT 0");
+  await getPool().query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS nasi_liwet_price INTEGER NOT NULL DEFAULT 0");
+  await getPool().query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pickup_count INTEGER NOT NULL DEFAULT 0");
+  await getPool().query("ALTER TABLE bookings ADD COLUMN IF NOT EXISTS pickup_price INTEGER NOT NULL DEFAULT 0");
+}
+
+function toWibDate(value: unknown): string {
+  if (!value) return "";
+  const d = value instanceof Date ? value : new Date(String(value));
+  if (Number.isNaN(d.getTime())) return String(value);
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Jakarta" }).format(d);
 }
 
 function rowToBooking(row: Record<string, unknown>): Booking {
@@ -85,12 +100,16 @@ function rowToBooking(row: Record<string, unknown>): Booking {
     packageSlug: String(row.package_slug),
     packageName: String(row.package_name),
     tripCode: String(row.trip_code),
-    startDate: String(row.start_date),
-    endDate: String(row.end_date),
+    startDate: toWibDate(row.start_date),
+    endDate: toWibDate(row.end_date),
     adultCount: Number(row.adult_count),
     childCount: Number(row.child_count),
     adultPrice: Number(row.adult_price),
     childPrice: Number(row.child_price),
+    nasiLiwetCount: Number(row.nasi_liwet_count ?? 0),
+    nasiLiwetPrice: Number(row.nasi_liwet_price ?? 0),
+    pickupCount: Number(row.pickup_count ?? 0),
+    pickupPrice: Number(row.pickup_price ?? 0),
     totalAmount: Number(row.total_amount),
     firstName: String(row.first_name),
     lastName: String(row.last_name),
@@ -113,12 +132,16 @@ export async function createBooking(input: CreateBookingInput) {
     `
       INSERT INTO bookings (
         booking_code, package_slug, package_name, trip_code, start_date, end_date,
-        adult_count, child_count, adult_price, child_price, total_amount,
+        adult_count, child_count, adult_price, child_price,
+        nasi_liwet_count, nasi_liwet_price, pickup_count, pickup_price,
+        total_amount,
         first_name, last_name, email, phone, address, city, country, payment_method
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
-        $7, $8, $9, $10, $11,
-        $12, $13, $14, $15, $16, $17, $18, $19
+        $7, $8, $9, $10,
+        $11, $12, $13, $14,
+        $15,
+        $16, $17, $18, $19, $20, $21, $22, $23
       )
       RETURNING *
     `,
@@ -133,6 +156,10 @@ export async function createBooking(input: CreateBookingInput) {
       input.childCount,
       input.adultPrice,
       input.childPrice,
+      input.nasiLiwetCount,
+      input.nasiLiwetPrice,
+      input.pickupCount,
+      input.pickupPrice,
       input.totalAmount,
       input.firstName,
       input.lastName,

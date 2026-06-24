@@ -66,6 +66,9 @@ export default async function CheckoutPage({
   const packageSlug = typeof params.package === "string" ? params.package : "";
   const startDate = typeof params.startDate === "string" ? params.startDate : "";
   const adultCount = Number(params.adult || 0);
+  const childCount = Number(params.child || 0);
+  const nasiLiwetCount = Number(params.nasiLiwet || 0);
+  const pickupCount = Number(params.pickup || 0);
   const detail = getPackageDetail(packageSlug);
 
   if (!detail || !startDate || adultCount < 3) redirect("/");
@@ -73,7 +76,14 @@ export default async function CheckoutPage({
   const minDate = dateOnly(addDays(new Date(), 3));
   if (startDate < minDate) redirect(`/paket/${detail.slug}`);
 
-  const total = adultCount * detail.price;
+  const childPrice = detail.price - 20000;
+  const nasiLiwetPrice = 50000;
+  const pickupPrice = ["curug-bidadari", "curug-cibingbin"].includes(packageSlug) ? 300000 : 400000;
+  const total =
+    adultCount * detail.price +
+    childCount * childPrice +
+    nasiLiwetCount * nasiLiwetPrice +
+    pickupCount * pickupPrice;
   const tripCode = createTripCode(detail.slug);
   const displayStartDate = formatDisplayDate(startDate);
 
@@ -81,30 +91,46 @@ export default async function CheckoutPage({
     <>
       <Navbar />
       <main className="checkout-page">
+        <div className="checkout-header">
+          <p className="checkout-kicker">Pemesanan</p>
+          <h1>Lengkapi Data Booking</h1>
+        </div>
         <div className="checkout-container">
           <section className="checkout-form-section">
-            <p className="checkout-kicker">Pemesanan</p>
-            <h1>Lengkapi Data Booking</h1>
-            <CheckoutForm packageSlug={detail.slug} startDate={startDate} adultCount={adultCount} />
+            <CheckoutForm packageSlug={detail.slug} startDate={startDate} adultCount={adultCount} childCount={childCount} nasiLiwetCount={nasiLiwetCount} pickupCount={pickupCount} />
           </section>
 
           <aside className="tour-details-card">
             <p className="checkout-kicker">Detail Perjalanan</p>
             <h2>{detail.name}</h2>
-            <DetailRow label="Paket" value="Dewasa" />
             <DetailRow label="Kode Trip" value={tripCode} />
             <DetailRow label="Tanggal Mulai" value={displayStartDate} />
             <DetailRow label="Tanggal Selesai" value={displayStartDate} />
-            <DetailRow label="Jumlah Peserta" value={`${adultCount} peserta`} />
+            <DetailRow label="Dewasa" value={`${adultCount} orang`} />
+            {childCount > 0 && <DetailRow label="Anak" value={`${childCount} orang`} />}
 
             <div className="tour-price-line">
-              <span>Peserta Paket</span>
-              <strong>Dewasa × {adultCount}</strong>
+              <span>Dewasa × {adultCount}</span>
+              <strong>{formatPrice(adultCount * detail.price)}</strong>
             </div>
-            <div className="tour-price-line">
-              <span>Harga satuan</span>
-              <strong>{formatPrice(detail.price)}</strong>
-            </div>
+            {childCount > 0 && (
+              <div className="tour-price-line">
+                <span>Anak × {childCount}</span>
+                <strong>{formatPrice(childCount * childPrice)}</strong>
+              </div>
+            )}
+            {nasiLiwetCount > 0 && (
+              <div className="tour-price-line">
+                <span>Nasi Liwet × {nasiLiwetCount}</span>
+                <strong>{formatPrice(nasiLiwetCount * nasiLiwetPrice)}</strong>
+              </div>
+            )}
+            {pickupCount > 0 && (
+              <div className="tour-price-line">
+                <span>Mobil Pick-up × {pickupCount}</span>
+                <strong>{formatPrice(pickupCount * pickupPrice)}</strong>
+              </div>
+            )}
             <div className="tour-total-line">
               <span>Total</span>
               <strong>{formatPrice(total)}</strong>
