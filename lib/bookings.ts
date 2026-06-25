@@ -175,6 +175,21 @@ export async function createBooking(input: CreateBookingInput) {
   return rowToBooking(result.rows[0]);
 }
 
+export async function updateBookingStatus(id: number, status: BookingStatus): Promise<void> {
+  await ensureBookingSchema();
+  await getPool().query("UPDATE bookings SET status = $1 WHERE id = $2", [status, id]);
+}
+
+export async function getBookingByCode(bookingCode: string): Promise<Booking | null> {
+  await ensureBookingSchema();
+  const result = await getPool().query(
+    "SELECT * FROM bookings WHERE booking_code = $1",
+    [bookingCode],
+  );
+  if (!result.rows[0]) return null;
+  return rowToBooking(result.rows[0]);
+}
+
 export async function listBookings() {
   await ensureBookingSchema();
   const result = await getPool().query("SELECT * FROM bookings ORDER BY created_at DESC LIMIT 100");

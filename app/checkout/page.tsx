@@ -1,9 +1,11 @@
+import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getPackageDetail } from "@/data/packageDetails";
-import { createTripCode } from "@/lib/bookings";
+import { createTripCode, getBookingByCode } from "@/lib/bookings";
+import { getBankAccount } from "@/lib/bank-account";
 import CheckoutForm from "./CheckoutForm";
 
 function formatPrice(price: number) {
@@ -46,17 +48,98 @@ export default async function CheckoutPage({
   const success = typeof params.success === "string" ? params.success : "";
 
   if (success) {
+    const [booking, bankAccount] = await Promise.all([
+      getBookingByCode(success),
+      getBankAccount(),
+    ]);
+
+    const waMessage = encodeURIComponent(
+      `Halo, saya ingin konfirmasi pembayaran untuk kode pemesanan ${success}. Terlampir bukti pembayaran saya.`
+    );
+    const waLink = `https://wa.me/6285775777430?text=${waMessage}`;
+
+    const s: Record<string, React.CSSProperties> = {
+      wrap: { width: "100%", maxWidth: 520, display: "flex", flexDirection: "column", gap: 16 },
+      card: { background: "#fff", border: "1px solid #e2e8e5", borderRadius: 24, boxShadow: "0 8px 30px rgba(15,23,42,0.07)", padding: "24px 28px" },
+      header: { textAlign: "center" as const },
+      icon: { width: 64, height: 64, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 20, background: "#dcfce7", color: "#166534", fontSize: 30, fontWeight: 900, marginBottom: 16 },
+      h1: { fontSize: 22, fontWeight: 900, color: "#111827", letterSpacing: "-0.03em", marginTop: 0 },
+      subtext: { marginTop: 8, color: "#64748b", fontSize: 14 },
+      badge: { display: "inline-block", marginTop: 10, padding: "4px 14px", borderRadius: 99, background: "#f0f7ee", color: "#166534", fontSize: 13, fontWeight: 700 },
+      label: { fontSize: 11, fontWeight: 800, color: "#94a3b8", textTransform: "uppercase" as const, letterSpacing: "0.06em", marginBottom: 6 },
+      desc: { fontSize: 14, color: "#64748b", marginBottom: 16, lineHeight: 1.6 },
+      bankBox: { background: "#f8faf9", border: "1px solid #e2e8e5", borderRadius: 16, overflow: "hidden", marginBottom: 16 },
+      bankRow: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid #e2e8e5" },
+      bankRowLast: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "12px 16px" },
+      bankLabel: { fontSize: 13, color: "#64748b", fontWeight: 600 },
+      bankValue: { fontSize: 14, fontWeight: 800, color: "#111827", textAlign: "right" as const },
+      bankNumber: { fontSize: 20, fontWeight: 900, color: "#166534", letterSpacing: "0.06em", textAlign: "right" as const },
+      totalBox: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "14px 16px", background: "#0f172a", borderRadius: 14 },
+      totalLabel: { fontSize: 13, color: "#94a3b8", fontWeight: 700 },
+      totalValue: { fontSize: 22, fontWeight: 900, color: "#4ade80", letterSpacing: "-0.03em" },
+      waBtn: { display: "block", width: "100%", padding: "14px", borderRadius: 14, background: "#166534", color: "#fff", fontSize: 15, fontWeight: 800, textAlign: "center" as const, textDecoration: "none" },
+      backLink: { textAlign: "center" as const, fontSize: 14, color: "#64748b", textDecoration: "none", fontWeight: 600, paddingBlock: 8 },
+    };
+
     return (
       <>
         <Navbar />
         <main className="checkout-page success">
-          <section className="checkout-success-card">
-            <div className="checkout-success-icon">✓</div>
-            <h1>Booking Berhasil Dibuat</h1>
-            <p>Kode booking Bos:</p>
-            <strong>{success}</strong>
-            <Link href="/" className="confirm-booking-btn">Kembali ke Beranda</Link>
-          </section>
+          <div style={s.wrap}>
+
+            {/* Header */}
+            <div style={{ ...s.card, ...s.header }}>
+              <div style={s.icon}>✓</div>
+              <h1 style={s.h1}>Pesanan Berhasil Dibuat!</h1>
+              <p style={s.subtext}>Kode Pemesanan: <strong style={{ color: "#111827", fontWeight: 900 }}>{success}</strong></p>
+              {booking && <p style={s.badge}>{booking.packageName}</p>}
+            </div>
+
+            {/* Instruksi Pembayaran */}
+            <div style={s.card}>
+              <p style={s.label}>Instruksi Pembayaran</p>
+              <p style={s.desc}>Silakan selesaikan pembayaran dengan transfer ke rekening berikut:</p>
+
+              {bankAccount ? (
+                <div style={s.bankBox}>
+                  <div style={s.bankRow}>
+                    <span style={s.bankLabel}>Bank</span>
+                    <strong style={s.bankValue}>{bankAccount.bankName}</strong>
+                  </div>
+                  <div style={s.bankRow}>
+                    <span style={s.bankLabel}>No. Rekening</span>
+                    <strong style={s.bankNumber}>{bankAccount.accountNumber}</strong>
+                  </div>
+                  <div style={s.bankRowLast}>
+                    <span style={s.bankLabel}>Atas Nama</span>
+                    <strong style={s.bankValue}>{bankAccount.accountHolder}</strong>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ ...s.bankBox, padding: 16, color: "#64748b", fontSize: 14 }}>
+                  Info rekening belum tersedia. Hubungi admin SentulTrip.
+                </div>
+              )}
+
+              {booking && (
+                <div style={s.totalBox}>
+                  <span style={s.totalLabel}>Total yang harus dibayar</span>
+                  <strong style={s.totalValue}>{formatPrice(booking.totalAmount)}</strong>
+                </div>
+              )}
+            </div>
+
+            {/* Konfirmasi Pembayaran */}
+            <div style={s.card}>
+              <p style={s.label}>Konfirmasi Pembayaran</p>
+              <p style={s.desc}>Setelah transfer, kirimkan foto bukti pembayaran ke WhatsApp kami agar pesanan segera dikonfirmasi.</p>
+              <a href={waLink} target="_blank" rel="noopener noreferrer" style={s.waBtn}>
+                Konfirmasi Pembayaran via WhatsApp
+              </a>
+            </div>
+
+            <Link href="/" style={s.backLink}>← Kembali ke Beranda</Link>
+          </div>
         </main>
         <Footer />
       </>

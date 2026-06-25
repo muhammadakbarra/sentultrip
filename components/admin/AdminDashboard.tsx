@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -184,7 +185,7 @@ function toWaLink(phone: string, packageName: string, bookingCode: string) {
   if (num.startsWith("0")) num = "62" + num.slice(1);
   else if (!num.startsWith("62")) num = "62" + num;
   const msg = encodeURIComponent(
-    `Halo, kami dari SentulTrip.id menghubungi terkait pesanan paket ${packageName} (Kode Booking: ${bookingCode}). Ada yang bisa kami bantu?`
+    `Halo, kami dari SentulTrip.id ingin mengkonfirmasi pesanan Anda untuk paket ${packageName} (Kode Booking: ${bookingCode}). Mohon ditunggu informasi selanjutnya dari kami ya. Terima kasih!`
   );
   return `https://wa.me/${num}?text=${msg}`;
 }
@@ -214,6 +215,24 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
     editing: false,
     bankAccount: null,
   });
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+
+  async function confirmPayment(id: number) {
+    await fetch("/api/admin/bookings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status: "confirmed" }),
+    });
+    setConfirmingId(null);
+    setBookingsState((prev) => ({
+      ...prev,
+      bookings: prev.bookings.map((b) => b.id === id ? { ...b, status: "confirmed" } : b),
+    }));
+    if (selectedBooking?.id === id) {
+      setSelectedBooking((prev) => prev ? { ...prev, status: "confirmed" } : prev);
+    }
+  }
   const active = useMemo(() => menuItems.find((item) => item.key === activeMenu)!, [activeMenu]);
 
   useEffect(() => {
@@ -779,10 +798,9 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
                       <th>Nama &amp; Email</th>
                       <th>Paket</th>
                       <th>Tgl Trip</th>
-                      <th>Peserta</th>
                       <th>Total</th>
-                      <th>Nomor HP</th>
                       <th>Status</th>
+                      <th>Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -796,30 +814,57 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
                         </td>
                         <td>{booking.packageName}</td>
                         <td>{formatShortDate(booking.startDate)}</td>
-                        <td>
-                          <div className="admin-bt-name">{booking.adultCount}D{booking.childCount > 0 ? ` · ${booking.childCount}A` : ""}</div>
-                          {(booking.nasiLiwetCount > 0 || booking.pickupCount > 0) && (
-                            <div className="admin-bt-addons">
-                              {booking.nasiLiwetCount > 0 && <span>🍱 {booking.nasiLiwetCount}p</span>}
-                              {booking.pickupCount > 0 && <span>🚐 {booking.pickupCount}</span>}
-                            </div>
-                          )}
-                        </td>
                         <td className="admin-bt-total">{formatCurrency(booking.totalAmount)}</td>
                         <td>
-                          {booking.phone ? (
+                          <span className={`admin-bt-status ${booking.status}`}>{booking.status}</span>
+                        </td>
+                        <td className="admin-bt-actions">
+                          <button
+                            type="button"
+                            className="admin-bt-btn admin-bt-btn-detail"
+                            onClick={() => setSelectedBooking(booking)}
+                          >
+                            Detail
+                          </button>
+                          {booking.phone && (
                             <a
                               href={toWaLink(booking.phone, booking.packageName, booking.bookingCode)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="admin-bt-wa"
+                              className="admin-bt-btn admin-bt-btn-wa"
                             >
-                              {booking.phone}
+                              Hubungi
                             </a>
-                          ) : "-"}
-                        </td>
-                        <td>
-                          <span className={`admin-bt-status ${booking.status}`}>{booking.status}</span>
+                          )}
+                          {booking.status === "pending" && (
+                            confirmingId === booking.id ? (
+                              <span className="admin-bt-confirm-row">
+                                <span className="admin-bt-confirm-label">Sudah bayar?</span>
+                                <button
+                                  type="button"
+                                  className="admin-bt-btn admin-bt-btn-confirm"
+                                  onClick={() => confirmPayment(booking.id)}
+                                >
+                                  Ya
+                                </button>
+                                <button
+                                  type="button"
+                                  className="admin-bt-btn admin-bt-btn-cancel"
+                                  onClick={() => setConfirmingId(null)}
+                                >
+                                  Batal
+                                </button>
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                className="admin-bt-btn admin-bt-btn-paid"
+                                onClick={() => setConfirmingId(booking.id)}
+                              >
+                                Sudah Bayar
+                              </button>
+                            )
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -885,6 +930,110 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
             </div>
           </div>
         </div>
+      ) : null}
+
+      {selectedBooking ? createPortal(
+        <div className="admin-detail-backdrop" onClick={() => setSelectedBooking(null)}>
+          <div className="admin-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-detail-header">
+              <div>
+                <p className="admin-kicker">Detail Pesanan</p>
+                <h2 className="admin-detail-title">{selectedBooking.bookingCode}</h2>
+              </div>
+              <button type="button" className="admin-detail-close" onClick={() => setSelectedBooking(null)}>×</button>
+            </div>
+
+            <div className="admin-detail-body">
+              <div className="admin-detail-grid">
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Nama</p>
+                  <p className="admin-detail-value">{[selectedBooking.firstName, selectedBooking.lastName].filter(Boolean).join(" ")}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Email</p>
+                  <p className="admin-detail-value">{selectedBooking.email}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Nomor HP</p>
+                  <p className="admin-detail-value">
+                    {selectedBooking.phone ? (
+                      <a href={toWaLink(selectedBooking.phone, selectedBooking.packageName, selectedBooking.bookingCode)} target="_blank" rel="noopener noreferrer" className="admin-detail-wa">{selectedBooking.phone}</a>
+                    ) : "-"}
+                  </p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Alamat</p>
+                  <p className="admin-detail-value">{selectedBooking.address || "-"}</p>
+                </div>
+              </div>
+
+              <div className="admin-detail-divider" />
+
+              <div className="admin-detail-grid">
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Paket</p>
+                  <p className="admin-detail-value">{selectedBooking.packageName}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Tanggal Trip</p>
+                  <p className="admin-detail-value">{formatShortDate(selectedBooking.startDate)}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Peserta</p>
+                  <p className="admin-detail-value">
+                    {selectedBooking.adultCount} Dewasa{selectedBooking.childCount > 0 ? ` · ${selectedBooking.childCount} Anak` : ""}
+                  </p>
+                </div>
+                {(selectedBooking.nasiLiwetCount > 0 || selectedBooking.pickupCount > 0) && (
+                  <div className="admin-detail-section">
+                    <p className="admin-detail-label">Tambahan</p>
+                    <p className="admin-detail-value">
+                      {selectedBooking.nasiLiwetCount > 0 && `Nasi Liwet × ${selectedBooking.nasiLiwetCount}`}
+                      {selectedBooking.nasiLiwetCount > 0 && selectedBooking.pickupCount > 0 && " · "}
+                      {selectedBooking.pickupCount > 0 && `Pick-up × ${selectedBooking.pickupCount}`}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="admin-detail-divider" />
+
+              <div className="admin-detail-grid">
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Total Pembayaran</p>
+                  <p className="admin-detail-value admin-detail-total">{formatCurrency(selectedBooking.totalAmount)}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Metode Bayar</p>
+                  <p className="admin-detail-value">{selectedBooking.paymentMethod === "bank_transfer" ? "Transfer Bank" : selectedBooking.paymentMethod}</p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Status</p>
+                  <p className="admin-detail-value"><span className={`admin-bt-status ${selectedBooking.status}`}>{selectedBooking.status}</span></p>
+                </div>
+                <div className="admin-detail-section">
+                  <p className="admin-detail-label">Waktu Pesan</p>
+                  <p className="admin-detail-value">{new Date(selectedBooking.createdAt).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })} WIB</p>
+                </div>
+              </div>
+            </div>
+
+            {selectedBooking.phone && (
+              <div className="admin-detail-footer">
+                <a
+                  href={toWaLink(selectedBooking.phone, selectedBooking.packageName, selectedBooking.bookingCode)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="admin-bt-btn admin-bt-btn-wa"
+                  style={{ padding: "10px 24px", fontSize: "14px" }}
+                >
+                  Hubungi via WhatsApp
+                </a>
+              </div>
+            )}
+          </div>
+        </div>,
+        document.body
       ) : null}
     </main>
   );
