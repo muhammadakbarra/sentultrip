@@ -921,6 +921,172 @@ a {
   background: #e2e8f0;
 }
 
+/* ─── WA Dashboard ───────────────────────────────────── */
+
+.admin-wa-info-box {
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: #f0f9f4;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px;
+}
+
+.admin-wa-info-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #166534;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.admin-wa-info-text {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.admin-wa-form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-wa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-wa-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-wa-hint {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.admin-wa-input {
+  padding: 11px 14px;
+  border: 1px solid #e2e8e5;
+  border-radius: 12px;
+  background: #f8faf9;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.admin-wa-input:focus {
+  border-color: #166534;
+  background: #ffffff;
+}
+
+.admin-wa-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+.admin-wa-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: #166534;
+  cursor: pointer;
+}
+
+.admin-wa-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.admin-wa-btn-save {
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: #166534;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.admin-wa-btn-save:hover { background: #14532d; }
+.admin-wa-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.admin-wa-btn-test {
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.admin-wa-btn-test:hover { background: #e2e8f0; }
+.admin-wa-btn-test:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.admin-wa-error {
+  font-size: 13px;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.admin-wa-result {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-wa-result.ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.admin-wa-result.fail {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.admin-wa-preview {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-wa-preview-bubble {
+  background: #f0f9f4;
+  border: 1px solid #bbf7d0;
+  border-radius: 16px 16px 16px 4px;
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #1e293b;
+  font-family: inherit;
+  white-space: pre-wrap;
+  max-width: 440px;
+}
+
 /* ─── Booking Detail Modal ────────────────────────────── */
 
 .admin-detail-backdrop {
@@ -1341,6 +1507,60 @@ a {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #94a3b8;
+}
+
+.booking-tier-info {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1.5px solid #bbf7d0;
+  border-radius: 16px;
+}
+
+.booking-tier-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803d;
+  margin-bottom: 10px;
+}
+
+.booking-tier-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  border: 1.5px solid #4ade80;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.booking-tier-table th,
+.booking-tier-table td {
+  padding: 7px 10px;
+  text-align: left;
+  border: 1px solid #4ade80;
+}
+
+.booking-tier-table th {
+  background: #bbf7d0;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #14532d;
+  white-space: nowrap;
+}
+
+.booking-tier-table td {
+  font-weight: 700;
+  color: #374151;
+  background: #ffffff;
+  white-space: nowrap;
+}
+
+.booking-tier-table tr.active td {
+  background: #dcfce7;
+  color: #14532d;
+  font-weight: 900;
 }
 
 @media (max-width: 700px) {

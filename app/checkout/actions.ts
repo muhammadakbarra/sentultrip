@@ -3,6 +3,9 @@
 import { redirect } from "next/navigation";
 import { createBooking, createTripCode } from "@/lib/bookings";
 import { getPackageDetail } from "@/data/packageDetails";
+import { getWaSettings } from "@/lib/wa-settings";
+import { sendFonnteMessage, buildBookingNotifMessage } from "@/lib/fonnte";
+import { getTieredAdultPrice, getTieredChildPrice } from "@/lib/pricing";
 
 type CheckoutState = { error?: string };
 
@@ -35,9 +38,9 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
     const detail = getPackageDetail(packageSlug);
     if (!detail) throw new Error("Paket tidak ditemukan.");
 
-    const minDate = toDateOnly(addDays(new Date(), 3));
+    const minDate = toDateOnly(addDays(new Date(), 1));
     if (startDate < minDate) {
-      throw new Error("Tanggal booking minimal hari ketiga dari hari ini.");
+      throw new Error("Tanggal booking minimal besok.");
     }
 
     if (adultCount < 3) {
@@ -55,11 +58,12 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
     const nasiLiwetCount = Number(formData.get("nasiLiwetCount") || 0);
     const pickupCount = Number(formData.get("pickupCount") || 0);
 
-    const adultPrice = detail.price;
-    const childPrice = detail.price - 20000;
+    const totalCount = adultCount + childCount;
+    const adultPrice = getTieredAdultPrice(detail.price, totalCount);
+    const childPrice = getTieredChildPrice(detail.price, totalCount);
     const nasiLiwetPrice = nasiLiwetCount > 0 ? 50000 : 0;
     const pickupPrice = pickupCount > 0
-      ? (["curug-bidadari", "curug-cibingbin"].includes(packageSlug) ? 300000 : 400000)
+      ? (["curug-bidadari", "curug-cibingbin", "desa-cisadon", "bukit-daolong", "puncak-langit"].includes(packageSlug) ? 300000 : 400000)
       : 0;
 
     const totalAmount =
@@ -94,6 +98,17 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
     });
 
     successUrl = `/checkout?success=${booking.bookingCode}`;
+
+    // Kirim notif WA via Fonnte — fire-and-forget, tidak blokir response
+    try {
+      const waSettings = await getWaSettings();
+      if (waSettings?.autoNotify && waSettings.fonnteToken && waSettings.targetNumber) {
+        const message = buildBookingNotifMessage(booking);
+        sendFonnteMessage(waSettings.fonnteToken, waSettings.targetNumber, message).catch(() => {});
+      }
+    } catch {
+      // Gagal notif WA tidak boleh batalkan booking
+    }
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Gagal membuat booking." };
   }

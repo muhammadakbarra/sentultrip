@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { getTieredAdultPrice, getTieredChildPrice } from "@/lib/pricing";
 
 type BookingFlowProps = {
   packageSlug: string;
@@ -56,10 +57,10 @@ const dayLabels = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
 export default function BookingFlow({ packageSlug, packageName, price, marketPrice }: BookingFlowProps) {
   const router = useRouter();
-  const minDate = useMemo(() => dateOnly(addDays(new Date(), 3)), []);
-  const minDateObject = useMemo(() => startOfDay(addDays(new Date(), 3)), []);
+  const minDate = useMemo(() => dateOnly(addDays(new Date(), 1)), []);
+  const minDateObject = useMemo(() => startOfDay(addDays(new Date(), 1)), []);
   const [visibleMonth, setVisibleMonth] = useState(() => {
-    const date = addDays(new Date(), 3);
+    const date = addDays(new Date(), 1);
     return new Date(date.getFullYear(), date.getMonth(), 1);
   });
   const [open, setOpen] = useState(false);
@@ -70,14 +71,16 @@ export default function BookingFlow({ packageSlug, packageName, price, marketPri
   const [nasiLiwetCount, setNasiLiwetCount] = useState(0);
   const [pickupCount, setPickupCount] = useState(0);
 
-  const isMainPackage = ["curug-bidadari", "curug-cibingbin"].includes(packageSlug);
-  const childPrice = price - 20000;
+  const isMainPackage = ["curug-bidadari", "curug-cibingbin", "desa-cisadon", "bukit-daolong", "puncak-langit"].includes(packageSlug);
+  const totalCount = adultCount + childCount;
+  const tieredAdultPrice = getTieredAdultPrice(price, totalCount);
+  const tieredChildPrice = getTieredChildPrice(price, totalCount);
   const nasiLiwetPrice = 50000;
   const pickupPrice = isMainPackage ? 300000 : 400000;
   const pickupMeetingPoint = isMainPackage ? "Pawon Sewu Roso" : "Sentul Nirwana";
   const total =
-    adultCount * price +
-    childCount * childPrice +
+    adultCount * tieredAdultPrice +
+    childCount * tieredChildPrice +
     nasiLiwetCount * nasiLiwetPrice +
     pickupCount * pickupPrice;
   const marketTotal = marketPrice && marketPrice > price
@@ -225,8 +228,8 @@ export default function BookingFlow({ packageSlug, packageName, price, marketPri
                       <div>
                         <h3>Dewasa</h3>
                         {marketPrice && <s className="pkg-market-price">{formatPrice(marketPrice)} / orang</s>}
-                        <p>{formatPrice(price)} / orang</p>
-                        <small>Minimum pemesanan 3 orang</small>
+                        <p>{formatPrice(tieredAdultPrice)} / orang</p>
+                        <small>Minimum pemesanan 3 orang{tieredAdultPrice < price ? ` · Hemat Rp ${((price - tieredAdultPrice) / 1000).toFixed(0)}k/orang` : ""}</small>
                       </div>
                       <div className="traveller-counter">
                         <button type="button" onClick={decreaseAdult}>−</button>
@@ -239,7 +242,7 @@ export default function BookingFlow({ packageSlug, packageName, price, marketPri
                       <div>
                         <h3>Anak</h3>
                         {marketPrice && <s className="pkg-market-price">{formatPrice(marketPrice - 20000)} / orang</s>}
-                        <p>{formatPrice(childPrice)} / orang</p>
+                        <p>{formatPrice(tieredChildPrice)} / orang</p>
                       </div>
                       <div className="traveller-counter">
                         <button type="button" onClick={decreaseChild}>−</button>
@@ -279,12 +282,42 @@ export default function BookingFlow({ packageSlug, packageName, price, marketPri
                   </div>
 
                   <div className="booking-travellers-right">
+                    <div className="booking-tier-info">
+                      <p className="booking-tier-title">🎉 Makin banyak, makin hemat!</p>
+                      <table className="booking-tier-table">
+                        <thead>
+                          <tr>
+                            <th>Total Peserta</th>
+                            <th>Dewasa</th>
+                            <th>Anak</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { label: "3–10 orang",  adult: price,         child: price - 20000 },
+                            { label: "11–20 orang", adult: price - 10000, child: price - 30000 },
+                            { label: "21–30 orang", adult: price - 20000, child: price - 40000 },
+                            { label: "31+ orang",   adult: price - 30000, child: price - 50000 },
+                          ].map((tier, i) => {
+                            const activeTier = Math.min(Math.floor(Math.max(totalCount - 1, 0) / 10), 3);
+                            return (
+                              <tr key={i} className={i === activeTier ? "active" : ""}>
+                                <td>{tier.label}</td>
+                                <td>{formatPrice(tier.adult)}</td>
+                                <td>{formatPrice(tier.child)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
                     <div className="booking-summary-box">
                       <h3>Ringkasan Pemesanan</h3>
                       <div><span>Nama Paket</span><strong>{packageName}</strong></div>
                       <div><span>Tanggal Mulai</span><strong>{formatDisplayDate(startDate)}</strong></div>
-                      {adultCount > 0 && <div><span>Dewasa × {adultCount}</span><strong>{formatPrice(adultCount * price)}</strong></div>}
-                      {childCount > 0 && <div><span>Anak × {childCount}</span><strong>{formatPrice(childCount * childPrice)}</strong></div>}
+                      {adultCount > 0 && <div><span>Dewasa × {adultCount}</span><strong>{formatPrice(adultCount * tieredAdultPrice)}</strong></div>}
+                      {childCount > 0 && <div><span>Anak × {childCount}</span><strong>{formatPrice(childCount * tieredChildPrice)}</strong></div>}
                       {nasiLiwetCount > 0 && <div><span>Nasi Liwet × {nasiLiwetCount}</span><strong>{formatPrice(nasiLiwetCount * nasiLiwetPrice)}</strong></div>}
                       {pickupCount > 0 && <div><span>Pick-up × {pickupCount}</span><strong>{formatPrice(pickupCount * pickupPrice)}</strong></div>}
                       <div>

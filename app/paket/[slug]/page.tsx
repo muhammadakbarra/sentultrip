@@ -93,7 +93,7 @@ export default async function PackageDetailPage({
         </section>
 
         <section className="package-container gallery-section">
-          <PackageGallery photos={detail.photos} orientations={detail.photoOrientations} name={detail.name} />
+          <PackageGallery photos={detail.photos} name={detail.name} />
         </section>
 
         <section id="detail-paket" className="package-container package-content-grid">

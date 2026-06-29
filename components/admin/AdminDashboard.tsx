@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import { logoutAction } from "@/app/admin/actions";
 
-type MenuKey = "statistik" | "pesanan" | "data";
+type MenuKey = "statistik" | "pesanan" | "data" | "wa";
 
 type AnalyticsSummary = {
   activeUsers: number;
@@ -102,6 +102,22 @@ type BankAccountState = {
   bankAccount?: BankAccount | null;
 };
 
+type WaSettings = {
+  fonnteToken: string;
+  targetNumber: string;
+  autoNotify: boolean;
+};
+
+type WaState = {
+  loading: boolean;
+  saving: boolean;
+  testing: boolean;
+  testResult?: string;
+  testOk?: boolean;
+  error?: string;
+  settings: WaSettings;
+};
+
 const IconChart = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
@@ -132,11 +148,17 @@ const IconSidebarOpen = () => (
     <path d="M13 9l3 3-3 3"/>
   </svg>
 );
+const IconWhatsApp = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+  </svg>
+);
 
 const menuItems: Array<{ key: MenuKey; label: string; icon: ReactNode; description: string }> = [
   { key: "statistik", label: "Statistik", icon: <IconChart />, description: "Google Analytics" },
   { key: "pesanan", label: "Pesanan", icon: <IconClipboard />, description: "Booking pelanggan" },
   { key: "data", label: "Data", icon: <IconLock />, description: "Credential rahasia" },
+  { key: "wa", label: "WhatsApp", icon: <IconWhatsApp />, description: "Notif Fonnte" },
 ];
 
 function formatNumber(value?: number) {
@@ -198,6 +220,8 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
     const path = key === "statistik" ? "/admin/dashboard" : `/admin/dashboard/${key}`;
     window.history.pushState(null, "", path);
     window.scrollTo({ top: 0, behavior: "instant" });
+    // reset WA test result saat pindah halaman
+    if (key !== "wa") setWaState((prev) => ({ ...prev, testResult: undefined, testOk: undefined }));
   }
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -216,6 +240,12 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
     bankAccount: null,
   });
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [waState, setWaState] = useState<WaState>({
+    loading: true,
+    saving: false,
+    testing: false,
+    settings: { fonnteToken: "", targetNumber: "", autoNotify: true },
+  });
   const [confirmingId, setConfirmingId] = useState<number | null>(null);
 
   async function confirmPayment(id: number) {
@@ -373,6 +403,61 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    async function loadWaSettings() {
+      try {
+        const res = await fetch("/api/admin/wa-settings");
+        const data = await res.json();
+        setWaState((prev) => ({
+          ...prev,
+          loading: false,
+          settings: data.settings ?? { fonnteToken: "", targetNumber: "", autoNotify: true },
+        }));
+      } catch {
+        setWaState((prev) => ({ ...prev, loading: false }));
+      }
+    }
+    loadWaSettings();
+  }, []);
+
+  async function saveWaSettings() {
+    setWaState((prev) => ({ ...prev, saving: true, error: undefined, testResult: undefined }));
+    try {
+      const res = await fetch("/api/admin/wa-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(waState.settings),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setWaState((prev) => ({ ...prev, saving: false }));
+    } catch (e) {
+      setWaState((prev) => ({ ...prev, saving: false, error: e instanceof Error ? e.message : "Gagal menyimpan." }));
+    }
+  }
+
+  async function testWaSend() {
+    setWaState((prev) => ({ ...prev, testing: true, testResult: undefined, testOk: undefined }));
+    try {
+      const res = await fetch("/api/admin/wa-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "test-send", ...waState.settings }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      const ok = data.result?.status === true;
+      setWaState((prev) => ({
+        ...prev,
+        testing: false,
+        testOk: ok,
+        testResult: ok ? "Pesan test berhasil dikirim! Cek WhatsApp kamu." : (data.result?.reason ?? "Gagal mengirim pesan."),
+      }));
+    } catch (e) {
+      setWaState((prev) => ({ ...prev, testing: false, testOk: false, testResult: e instanceof Error ? e.message : "Gagal." }));
+    }
+  }
 
   const stats = useMemo(() => {
     const s = analytics.summary;
@@ -743,8 +828,8 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
                     const maxSessions = Math.max(...analytics.summary!.landingPages.map((p) => p.sessions), 1);
                     return (
                       <div className="admin-top-pages-list">
-                        {analytics.summary!.landingPages.map((page) => (
-                          <div className="admin-top-pages-row" key={page.path}>
+                        {analytics.summary!.landingPages.map((page, i) => (
+                          <div className="admin-top-pages-row" key={`${page.path}-${i}`}>
                             <div className="admin-top-pages-info">
                               <p className="admin-analytics-row-title">{page.path}</p>
                               <p className="admin-analytics-row-subtitle">Titik Masuk</p>
@@ -877,7 +962,7 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
               </div>
             )}
           </div>
-        ) : (
+        ) : activeMenu === "data" ? (
           <div className="admin-content-card">
             <div className="admin-content-header">
               <div>
@@ -903,6 +988,104 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
               />
             </div>
           </div>
+        ) : activeMenu === "wa" ? (
+          <div className="admin-content-card">
+            <div className="admin-content-header">
+              <div>
+                <p className="admin-kicker">WhatsApp Otomatis</p>
+                <h2 className="admin-content-title">Notifikasi WhatsApp</h2>
+              </div>
+              <div className="admin-content-icon"><IconWhatsApp /></div>
+            </div>
+
+            {waState.loading ? (
+              <p className="admin-placeholder-title" style={{ marginTop: 20 }}>Memuat pengaturan...</p>
+            ) : (
+              <>
+                {/* Status Info */}
+                <div className="admin-wa-info-box">
+                  <p className="admin-wa-info-title">Cara Kerja</p>
+                  <p className="admin-wa-info-text">
+                    Setiap ada pesanan baru masuk, sistem otomatis mengirim detail pesanan ke nomor WhatsApp bisnis SentulTrip melalui Fonnte. Kamu perlu menghubungkan nomor WA di dashboard Fonnte terlebih dahulu.
+                  </p>
+                </div>
+
+                {/* Form Token & Target */}
+                <div className="admin-wa-form">
+                  <div className="admin-wa-field">
+                    <label className="admin-wa-label">Token Fonnte</label>
+                    <p className="admin-wa-hint">Salin dari dashboard Fonnte → pilih device → copy Token</p>
+                    <input
+                      type="password"
+                      className="admin-wa-input"
+                      placeholder="Token dari Fonnte..."
+                      value={waState.settings.fonnteToken}
+                      onChange={(e) => setWaState((prev) => ({ ...prev, settings: { ...prev.settings, fonnteToken: e.target.value } }))}
+                    />
+                  </div>
+
+                  <div className="admin-wa-field">
+                    <label className="admin-wa-label">Nomor Tujuan Notifikasi</label>
+                    <p className="admin-wa-hint">Nomor WA bisnis SentulTrip yang akan menerima notif pesanan (format: 628xxxxxxx)</p>
+                    <input
+                      type="tel"
+                      className="admin-wa-input"
+                      placeholder="628xxxxxxxxxx"
+                      value={waState.settings.targetNumber}
+                      onChange={(e) => setWaState((prev) => ({ ...prev, settings: { ...prev.settings, targetNumber: e.target.value } }))}
+                    />
+                  </div>
+
+                  <label className="admin-wa-toggle">
+                    <input
+                      type="checkbox"
+                      checked={waState.settings.autoNotify}
+                      onChange={(e) => setWaState((prev) => ({ ...prev, settings: { ...prev.settings, autoNotify: e.target.checked } }))}
+                    />
+                    <span>Aktifkan notif otomatis saat ada pesanan baru</span>
+                  </label>
+
+                  {waState.error && <p className="admin-wa-error">{waState.error}</p>}
+
+                  <div className="admin-wa-actions">
+                    <button
+                      type="button"
+                      className="admin-wa-btn-save"
+                      onClick={saveWaSettings}
+                      disabled={waState.saving}
+                    >
+                      {waState.saving ? "Menyimpan..." : "Simpan Pengaturan"}
+                    </button>
+                    <button
+                      type="button"
+                      className="admin-wa-btn-test"
+                      onClick={testWaSend}
+                      disabled={waState.testing || !waState.settings.fonnteToken || !waState.settings.targetNumber}
+                    >
+                      {waState.testing ? "Mengirim..." : "Test Kirim Pesan"}
+                    </button>
+                  </div>
+
+                  {waState.testResult && (
+                    <div className={`admin-wa-result ${waState.testOk ? "ok" : "fail"}`}>
+                      {waState.testOk ? "✓" : "✗"} {waState.testResult}
+                    </div>
+                  )}
+                </div>
+
+                {/* Preview pesan */}
+                <div className="admin-wa-preview">
+                  <p className="admin-wa-label">Preview Pesan Notifikasi</p>
+                  <div className="admin-wa-preview-bubble">
+                    {`🎉 *PESANAN BARU - SentulTrip.id*\n\n📋 Kode: STB-XXXXXXXX\n👤 Nama: Nama Customer\n📦 Paket: Trekking Curug Cibingbin\n📅 Tgl Trip: 2026-07-05\n👥 Peserta: 3 Dewasa\n💰 Total: Rp 450.000\n📱 No HP: 08123456789\n📧 Email: customer@email.com\n\n_Segera konfirmasi pembayaran customer._`
+                      .split("\n").map((line, i) => <span key={i}>{line}<br /></span>)}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: "none" }} />
         )}
       </section>
 
