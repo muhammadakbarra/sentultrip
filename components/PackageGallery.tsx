@@ -47,9 +47,9 @@ export default function PackageGallery({
             alt={`${name} foto`}
             fill
             style={{ objectFit: "cover", pointerEvents: "none" }}
-            sizes="(max-width: 768px) 100vw, 1080px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1140px) calc(100vw - 48px), 1092px"
             priority
-            loading="eager"
+            quality={85}
           />
         </div>
 
@@ -164,7 +164,7 @@ export default function PackageGallery({
             }}
             aria-label={`Pilih foto ${i + 1}`}
           >
-            <Image src={src} alt="" fill style={{ objectFit: "cover", pointerEvents: "none" }} sizes="72px" />
+            <Image src={src} alt="" fill style={{ objectFit: "cover", pointerEvents: "none" }} sizes="72px" loading="lazy" quality={60} />
           </button>
         ))}
       </div>

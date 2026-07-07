@@ -156,7 +156,7 @@ export default async function CheckoutPage({
 
   if (!detail || !startDate || adultCount < 3) redirect("/");
 
-  const minDate = dateOnly(addDays(new Date(), 3));
+  const minDate = dateOnly(addDays(new Date(), 1));
   if (startDate < minDate) redirect(`/paket/${detail.slug}`);
 
   const childPrice = detail.price - 20000;

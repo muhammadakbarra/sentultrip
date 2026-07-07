@@ -41,18 +41,6 @@ const activities = [
     link: waLink("Halo SentulTrip, kami dari [nama perusahaan] ingin tanya paket corporate outing atau outbound di Sentul untuk sekitar [jumlah] peserta."),
     external: true,
   },
-  {
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
-    ),
-    name: "Live-in Desa",
-    desc: "Menginap di desa wisata Sentul selama 2 hari 1 malam. Cocok untuk edukasi, retreat, dan liburan keluarga.",
-    link: waLink("Halo SentulTrip, saya ingin informasi paket live-in desa di Sentul — durasi, fasilitas, dan harga per orangnya."),
-    external: true,
-  },
 ];
 
 export default function ActivitiesSection() {

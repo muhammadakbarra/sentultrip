@@ -55,6 +55,12 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
       throw new Error("Mohon setujui syarat, ketentuan, dan privacy policy.");
     }
 
+    const phoneRaw = required(formData, "phone");
+    const phoneDigits = phoneRaw.replace(/\D/g, "");
+    if (phoneDigits.length < 10 || phoneDigits.length > 12) {
+      throw new Error("Nomor HP harus terdiri dari 10–12 digit.");
+    }
+
     const nasiLiwetCount = Number(formData.get("nasiLiwetCount") || 0);
     const pickupCount = Number(formData.get("pickupCount") || 0);
 
@@ -90,21 +96,21 @@ export async function confirmBookingAction(_state: CheckoutState, formData: Form
       firstName: required(formData, "fullName"),
       lastName: "",
       email: required(formData, "email"),
-      phone: required(formData, "phone"),
-      address: required(formData, "address"),
-      city: "",
+      phone: phoneRaw,
+      address: "",
+      city: required(formData, "city"),
       country: "Indonesia",
       paymentMethod: "bank_transfer",
     });
 
     successUrl = `/checkout?success=${booking.bookingCode}`;
 
-    // Kirim notif WA via Fonnte — fire-and-forget, tidak blokir response
+    // Kirim notif WA via Fonnte — await sebelum redirect agar tidak dibatalkan
     try {
       const waSettings = await getWaSettings();
       if (waSettings?.autoNotify && waSettings.fonnteToken && waSettings.targetNumber) {
         const message = buildBookingNotifMessage(booking);
-        sendFonnteMessage(waSettings.fonnteToken, waSettings.targetNumber, message).catch(() => {});
+        await sendFonnteMessage(waSettings.fonnteToken, waSettings.targetNumber, message);
       }
     } catch {
       // Gagal notif WA tidak boleh batalkan booking

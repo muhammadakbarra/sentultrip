@@ -9,7 +9,6 @@ const filters: { label: string; value: "all" | PackageType }[] = [
   { label: "Trekking", value: "trekking" },
   { label: "Offroad", value: "offroad" },
   { label: "Korporat", value: "corporate" },
-  { label: "Live-in", value: "livein" },
 ];
 
 const typeTheme: Record<
@@ -42,11 +41,6 @@ const typeTheme: Record<
     cardBg: "#eef3fa", cardBorder: "#c0d0e8", imgBg: "#d8e5f5", imgTextColor: "#2c5282",
     badgeBg: "#2c5282", badgeText: "#ffffff", badgeLabel: "Korporat",
     priceColor: "#2c5282", btnBg: "#2c5282", btnHoverBg: "#1e3a5f", placeholderText: "Corporate Outing",
-  },
-  livein: {
-    cardBg: "#f5f0fa", cardBorder: "#d0bce8", imgBg: "#e8d8f5", imgTextColor: "#5b3a8a",
-    badgeBg: "#5b3a8a", badgeText: "#ffffff", badgeLabel: "Live-in",
-    priceColor: "#5b3a8a", btnBg: "#5b3a8a", btnHoverBg: "#4a2d72", placeholderText: "Live-in Desa",
   },
 };
 

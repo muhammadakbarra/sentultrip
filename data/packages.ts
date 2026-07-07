@@ -1,4 +1,4 @@
-export type PackageType = "trekking" | "offroad" | "corporate" | "livein";
+export type PackageType = "trekking" | "offroad" | "corporate";
 
 export interface Package {
   id: number;

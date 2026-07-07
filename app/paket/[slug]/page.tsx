@@ -55,6 +55,8 @@ export default async function PackageDetailPage({
 
   return (
     <>
+      {/* Preload LCP image — must be server-side so the hint lands in initial HTML */}
+      <link rel="preload" as="image" href={detail.photos[0]} fetchPriority="high" />
       <Navbar />
       <main className="package-page">
         <div className="package-breadcrumb-wrap">
