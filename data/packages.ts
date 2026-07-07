@@ -73,7 +73,7 @@ const packages: Package[] = [
   },
   {
     id: 99, slug: "test-dummy", name: "[TEST] Paket Demo", type: "trekking", duration: "1 Jam",
-    price: 20000, marketPrice: 50000, priceUnit: "orang", rating: 5.0, reviews: 0, badge: "TEST",
+    price: 5000, marketPrice: 15000, priceUnit: "orang", rating: 5.0, reviews: 0, badge: "TEST",
     images: [],
   },
 ];
