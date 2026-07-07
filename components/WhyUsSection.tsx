@@ -130,14 +130,8 @@ export default function WhyUsSection() {
           </p>
         </div>
 
-        {/* Right — 2x3 grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "16px",
-          }}
-        >
+        {/* Right — Desktop: 2x3 card grid */}
+        <div className="whyus-cards">
           {cards.map((c) => (
             <div
               key={c.title}
@@ -150,12 +144,7 @@ export default function WhyUsSection() {
                 padding: "20px",
               }}
             >
-              <div
-                style={{
-                  color: "var(--color-green-primary)",
-                  marginBottom: "10px",
-                }}
-              >
+              <div style={{ color: "var(--color-green-primary)", marginBottom: "10px" }}>
                 {c.icon}
               </div>
               <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#111111", marginBottom: "6px" }}>
@@ -165,14 +154,45 @@ export default function WhyUsSection() {
             </div>
           ))}
         </div>
+
+        {/* Mobile: compact checklist */}
+        <div className="whyus-list">
+          {cards.map((c) => (
+            <div key={c.title} className="whyus-list-item">
+              <span style={{ color: "var(--color-green-primary)", display: "flex", flexShrink: 0 }}>{c.icon}</span>
+              <span style={{ fontSize: "15px", fontWeight: 600, color: "#111111" }}>{c.title}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <style>{`
+        .whyus-cards {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .whyus-list { display: none; }
+
         @media (max-width: 768px) {
           .whyus-grid {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
+            gap: 32px !important;
           }
+          .whyus-cards { display: none; }
+          .whyus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+          }
+          .whyus-list-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--color-border);
+          }
+          .whyus-list-item:last-child { border-bottom: none; }
         }
       `}</style>
     </section>

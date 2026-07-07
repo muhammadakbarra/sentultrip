@@ -237,7 +237,7 @@ function PackageCard({ pkg }: { pkg: Package }) {
                 {formatRupiah(pkg.marketPrice)}
               </div>
             )}
-            <div style={{ fontSize: "18px", fontWeight: 700, color: t.priceColor, lineHeight: 1.2 }}>
+            <div style={{ fontSize: "18px", fontWeight: 700, color: t.priceColor, lineHeight: 1.2, fontVariantNumeric: "tabular-nums" }}>
               {formatRupiah(pkg.price)}
             </div>
             <div style={{ fontSize: "11px", color: "#aaa" }}>/{pkg.priceUnit}</div>

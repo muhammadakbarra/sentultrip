@@ -101,7 +101,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${font.variable} h-full`} data-scroll-behavior="smooth">
+    <html lang="id" className={`${font.variable} h-full`}>
       <head>
         <script
           type="application/ld+json"
@@ -112,7 +112,8 @@ export default function RootLayout({
         className="min-h-full flex flex-col antialiased"
         style={{ fontFamily: "var(--font-jakarta), sans-serif" }}
       >
-        {children}
+        <a href="#main-content" className="skip-link">Lewati ke konten</a>
+        <div id="main-content">{children}</div>
         {gaMeasurementId ? (
           <>
             <Script

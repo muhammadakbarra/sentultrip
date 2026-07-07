@@ -153,10 +153,6 @@ export default function HeroSection() {
               position: "relative",
               width: "100%",
               height: "300px",
-              borderRadius: "16px",
-              overflow: "hidden",
-              border: "1px solid var(--color-border)",
-              backgroundColor: "var(--color-bg-tertiary)",
             }}
           >
             <Image
@@ -164,7 +160,7 @@ export default function HeroSection() {
               alt="Logo SentulTrip — Wisata Trekking dan Offroad Sentul Bogor"
               fill
               sizes="(max-width: 768px) 92vw, 540px"
-              style={{ objectFit: "contain", padding: "16px" }}
+              style={{ objectFit: "contain" }}
               priority
             />
           </div>

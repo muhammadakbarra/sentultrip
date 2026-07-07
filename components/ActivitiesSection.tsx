@@ -88,13 +88,8 @@ export default function ActivitiesSection() {
           Setiap aktivitas dipandu oleh warga asli Sentul dengan pengalaman lapangan lebih dari satu dekade.
         </p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "20px",
-          }}
-        >
+        {/* Desktop: cards */}
+        <div className="activities-cards">
           {activities.map((act) => (
             <div
               key={act.name}
@@ -128,7 +123,57 @@ export default function ActivitiesSection() {
             </div>
           ))}
         </div>
+
+        {/* Mobile: buttons */}
+        <div className="activities-buttons">
+          {activities.map((act) => (
+            <a
+              key={act.name}
+              href={act.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="activity-btn"
+            >
+              <span style={{ color: "var(--color-green-primary)", display: "flex" }}>{act.icon}</span>
+              <span>{act.name}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ marginLeft: "auto", opacity: 0.4 }}>
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
+          ))}
+        </div>
       </div>
+
+      <style>{`
+        .activities-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 20px;
+        }
+        .activities-buttons { display: none; }
+
+        @media (max-width: 640px) {
+          .activities-cards { display: none; }
+          .activities-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .activity-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111111;
+            text-decoration: none;
+          }
+        }
+      `}</style>
     </section>
   );
 }
