@@ -190,6 +190,16 @@ export async function getBookingByCode(bookingCode: string): Promise<Booking | n
   return rowToBooking(result.rows[0]);
 }
 
+export async function getBookingByTripCode(tripCode: string): Promise<Booking | null> {
+  await ensureBookingSchema();
+  const result = await getPool().query(
+    "SELECT * FROM bookings WHERE trip_code = $1 LIMIT 1",
+    [tripCode],
+  );
+  if (!result.rows[0]) return null;
+  return rowToBooking(result.rows[0]);
+}
+
 export async function listBookings() {
   await ensureBookingSchema();
   const result = await getPool().query("SELECT * FROM bookings ORDER BY created_at DESC LIMIT 100");

@@ -29,6 +29,9 @@ function toDateOnly(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 function validateBookingForm(formData: FormData) {
   const packageSlug = required(formData, "packageSlug");
   const startDate = required(formData, "startDate");
@@ -39,9 +42,12 @@ function validateBookingForm(formData: FormData) {
   const detail = getPackageDetail(packageSlug);
   if (!detail) throw new Error("Paket tidak ditemukan.");
 
+  if (!DATE_RE.test(startDate)) throw new Error("Format tanggal tidak valid.");
   const minDate = toDateOnly(addDays(new Date(), 1));
   if (startDate < minDate) throw new Error("Tanggal booking minimal besok.");
   if (adultCount < 3) throw new Error("Minimum pemesanan adult adalah 3 orang.");
+  if (adultCount > 300) throw new Error("Jumlah peserta dewasa maksimal 300 orang.");
+  if (childCount < 0 || childCount > 300) throw new Error("Jumlah anak tidak valid.");
   if (childCount > 0 && adultCount < 1) throw new Error("Pemesanan child harus memiliki minimal 1 adult.");
   if (!acceptedTerms) throw new Error("Mohon setujui syarat, ketentuan, dan privacy policy.");
 
@@ -53,9 +59,15 @@ function validateBookingForm(formData: FormData) {
 
   const nasiLiwetCount = Number(formData.get("nasiLiwetCount") || 0);
   const pickupCount = Number(formData.get("pickupCount") || 0);
+  if (nasiLiwetCount < 0 || nasiLiwetCount > 500) throw new Error("Jumlah nasi liwet tidak valid.");
+  if (pickupCount < 0 || pickupCount > 30) throw new Error("Jumlah mobil pickup tidak valid.");
+
   const fullName = required(formData, "fullName");
+  if (fullName.length > 100) throw new Error("Nama terlalu panjang.");
   const email = required(formData, "email");
+  if (!EMAIL_RE.test(email)) throw new Error("Format email tidak valid.");
   const city = required(formData, "city");
+  if (city.length > 100) throw new Error("Nama kota terlalu panjang.");
 
   const MAIN_SLUGS = ["curug-bidadari", "curug-cibingbin", "desa-cisadon", "bukit-daolong", "puncak-langit"];
   const totalCount = adultCount + childCount;
@@ -158,9 +170,11 @@ export async function finalizeBookingAction(_state: FinalizeState, formData: For
     const email = required(formData, "email");
     const city = required(formData, "city");
 
+    if (!EMAIL_RE.test(email)) throw new Error("Format email tidak valid.");
     const detail = getPackageDetail(packageSlug);
     if (!detail) throw new Error("Paket tidak ditemukan.");
     if (adultCount < 3) throw new Error("Minimum pemesanan adult adalah 3 orang.");
+    if (adultCount > 300) throw new Error("Jumlah peserta tidak valid.");
 
     const MAIN_SLUGS = ["curug-bidadari", "curug-cibingbin", "desa-cisadon", "bukit-daolong", "puncak-langit"];
     const totalCount = adultCount + childCount;
