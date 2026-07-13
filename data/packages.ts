@@ -72,6 +72,11 @@ const packages: Package[] = [
     images: ["/produk/Curug-Hordeng-Curug-Kembar/1.jpeg", "/produk/Curug-Hordeng-Curug-Kembar/2.jpeg", "/produk/Curug-Hordeng-Curug-Kembar/3.jpeg"],
   },
   {
+    id: 2, slug: "offroad-curug-bidadari", name: "Jeep Offroad Curug Bidadari", type: "offroad", duration: "3–4 Jam",
+    price: 1250000, priceUnit: "jeep", rating: 4.9, reviews: 0, badge: "OFFROAD",
+    images: ["/produk/offroad-curug-bidadari/1.webp", "/produk/offroad-curug-bidadari/2.webp"],
+  },
+  {
     id: 99, slug: "test-dummy", name: "[TEST] Paket Demo", type: "trekking", duration: "1 Jam",
     price: 5000, marketPrice: 15000, priceUnit: "orang", rating: 5.0, reviews: 0, badge: "TEST",
     images: [],
