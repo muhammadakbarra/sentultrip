@@ -219,9 +219,14 @@ export default function Footer() {
         <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>
           &copy; {year} SentulTrip. All rights reserved.
         </p>
-        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>
-          Sentul, Bogor, Jawa Barat
-        </p>
+        <a
+          href="https://bangunwebsite.id"
+          target="_blank"
+          rel="noopener"
+          style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)", textDecoration: "none" }}
+        >
+          Website by bangunwebsite.id
+        </a>
       </div>
     </footer>
   );
