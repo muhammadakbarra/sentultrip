@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Poppins } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const font = Plus_Jakarta_Sans({
+const font = Poppins({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -128,7 +129,7 @@ export default function RootLayout({
       </head>
       <body
         className="min-h-full flex flex-col antialiased"
-        style={{ fontFamily: "var(--font-jakarta), sans-serif" }}
+        style={{ fontFamily: "var(--font-poppins), sans-serif" }}
       >
         <a href="#main-content" className="skip-link">Lewati ke konten</a>
         <div id="main-content">{children}</div>
