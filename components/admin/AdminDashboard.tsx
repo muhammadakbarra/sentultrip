@@ -1188,7 +1188,15 @@ export default function AdminDashboard({ username, initialMenu = "statistik" }: 
                 </div>
                 <div className="admin-detail-section">
                   <p className="admin-detail-label">Metode Bayar</p>
-                  <p className="admin-detail-value">{selectedBooking.paymentMethod === "bank_transfer" ? "Transfer Bank" : selectedBooking.paymentMethod}</p>
+                  <p className="admin-detail-value">
+                    {selectedBooking.paymentMethod === "bank_transfer"
+                      ? "Transfer Bank"
+                      : selectedBooking.paymentMethod === "doku"
+                        ? "DOKU"
+                        : selectedBooking.paymentMethod === "midtrans"
+                          ? "Midtrans"
+                          : selectedBooking.paymentMethod}
+                  </p>
                 </div>
                 <div className="admin-detail-section">
                   <p className="admin-detail-label">Status</p>

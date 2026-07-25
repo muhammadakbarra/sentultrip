@@ -49,7 +49,7 @@ function formatRupiah(n: number) {
 }
 
 
-function PackageCard({ pkg }: { pkg: Package }) {
+export function PackageCard({ pkg }: { pkg: Package }) {
   const t = typeTheme[pkg.type];
   const hasImages = pkg.images && pkg.images.length > 0;
   const multipleImages = pkg.images && pkg.images.length > 1;

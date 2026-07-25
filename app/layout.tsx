@@ -10,6 +10,7 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://sentultrip.com"),
   title: "SentulTrip — Wisata Trekking & Offroad di Sentul Bogor",
   description:
     "Paket wisata trekking curug, offroad jeep, dan corporate outing di Sentul Bogor. Guide lokal berpengalaman, harga transparan mulai Rp 150.000. Buka setiap hari.",
@@ -35,6 +36,21 @@ export const metadata: Metadata = {
     siteName: "SentulTrip",
     locale: "id_ID",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SentulTrip — Wisata Trekking & Offroad di Sentul Bogor",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SentulTrip — Wisata Trekking & Offroad di Sentul Bogor",
+    description:
+      "Paket wisata trekking curug, offroad jeep, dan corporate outing di Sentul Bogor. Guide lokal berpengalaman, harga transparan mulai Rp 150.000.",
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: "https://sentultrip.com",

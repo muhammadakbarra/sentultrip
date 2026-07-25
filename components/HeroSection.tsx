@@ -66,7 +66,7 @@ export default function HeroSection() {
               color: "#111111",
             }}
           >
-            Wisata Trekking dan Offroad di{" "}
+            Wisata Trekking Curug dan Offroad di{" "}
             <span style={{ color: "var(--color-green-primary)" }}>Sentul Bogor</span>
             {" "}— Dipandu Guide Lokal
           </h1>

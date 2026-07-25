@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import PackageGallery from "@/components/PackageGallery";
 import { getPackageDetail, getAllSlugs } from "@/data/packageDetails";
 import BookingFlow from "@/components/BookingFlow";
+import { PackageCard } from "@/components/PackagesSection";
+import packages from "@/data/packages";
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -26,9 +28,30 @@ export async function generateMetadata({
   const { slug } = await params;
   const detail = getPackageDetail(slug);
   if (!detail) return {};
+
+  const title = `${detail.name} — SentulTrip`;
+  const url = `https://sentultrip.com/paket/${detail.slug}`;
+  const image = detail.photos[0];
+
   return {
-    title: `${detail.name} — SentulTrip`,
+    title,
     description: detail.shortDescription,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description: detail.shortDescription,
+      url,
+      type: "website",
+      images: image ? [{ url: image, alt: detail.name }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: detail.shortDescription,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -43,6 +66,16 @@ export default async function PackageDetailPage({
 
   const price = formatPrice(detail.price);
   const marketPrice = detail.marketPrice ? formatPrice(detail.marketPrice) : null;
+
+  const currentPkg = packages.find((p) => p.slug === detail.slug);
+  const sameType = currentPkg
+    ? packages.filter((p) => p.slug !== detail.slug && p.type === currentPkg.type)
+    : [];
+  const relatedPackages = (
+    sameType.length >= 3
+      ? sameType
+      : [...sameType, ...packages.filter((p) => p.slug !== detail.slug && !sameType.includes(p))]
+  ).slice(0, 3);
 
   const quickInfo = [
     { label: "Durasi", value: detail.duration },
@@ -206,6 +239,17 @@ export default async function PackageDetailPage({
             </div>
           </aside>
         </section>
+
+        {relatedPackages.length > 0 && (
+          <section className="package-container related-section">
+            <h2 className="section-title">Paket Sejenis Lainnya</h2>
+            <div className="related-grid">
+              {relatedPackages.map((pkg) => (
+                <PackageCard key={pkg.id} pkg={pkg} />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       <div className="mobile-sticky-cta-wrap">
@@ -310,6 +354,9 @@ export default async function PackageDetailPage({
         .booking-card .availability-btn { width: 100%; margin-top: 20px; }
         .booking-note { text-align: center; color: #888; font-size: 13px; margin-top: 10px; }
 
+        .related-section { padding-bottom: 62px; }
+        .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
         .mobile-sticky-cta-wrap { display: none; }
 
         @media (max-width: 920px) {
@@ -318,6 +365,7 @@ export default async function PackageDetailPage({
           .booking-card-wrap { position: static; }
           .quick-card-grid { grid-template-columns: repeat(2, 1fr); }
           .highlight-grid { grid-template-columns: 1fr; }
+          .related-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 640px) {
@@ -328,7 +376,7 @@ export default async function PackageDetailPage({
           .package-short, .body-copy { font-size: 16px; line-height: 1.75; }
           .primary-cta, .secondary-cta { width: 100%; font-size: 16px; }
           .gallery-section { padding-bottom: 32px; }
-          .quick-card-grid, .included-grid { grid-template-columns: 1fr; }
+          .quick-card-grid, .included-grid, .related-grid { grid-template-columns: 1fr; }
           .quick-card strong { font-size: 17px; }
           .section-title { font-size: 24px; }
           .timeline-item { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; }

@@ -104,6 +104,56 @@ export default async function CheckoutPage({
     );
   }
 
+  // ── DOKU success page ─────────────────────────────────────────────────────
+  if (success && payment === "doku") {
+    const waMessage = `Halo SentulTrip! Saya baru saja melakukan pembayaran dengan kode referensi ${success}. Mohon konfirmasinya 🙏`;
+    const chatWaLink = `https://wa.me/6285775777430?text=${encodeURIComponent(waMessage)}`;
+
+    const s: Record<string, React.CSSProperties> = {
+      wrap: { width: "100%", maxWidth: 480, display: "flex", flexDirection: "column", gap: 16 },
+      card: { background: "#fff", border: "1px solid #e2e8e5", borderRadius: 24, boxShadow: "0 8px 30px rgba(15,23,42,0.07)", padding: "24px 28px" },
+      header: { textAlign: "center" as const },
+      icon: { width: 64, height: 64, display: "inline-flex", alignItems: "center", justifyContent: "center", borderRadius: 20, background: "#dcfce7", color: "#166534", fontSize: 30, fontWeight: 900, marginBottom: 16 },
+      h1: { fontSize: 22, fontWeight: 900, color: "#111827", letterSpacing: "-0.03em", marginTop: 0 },
+      subtext: { marginTop: 8, color: "#64748b", fontSize: 14, lineHeight: 1.6 },
+      badge: { display: "inline-block", marginTop: 10, padding: "4px 14px", borderRadius: 99, background: "#f0f7ee", color: "#166534", fontSize: 13, fontWeight: 700 },
+      desc: { fontSize: 14, color: "#64748b", lineHeight: 1.7, margin: "0 0 16px" },
+      chatBtn: { display: "block", width: "100%", padding: "14px", borderRadius: 14, background: "#166534", color: "#fff", fontSize: 15, fontWeight: 800, textAlign: "center" as const, textDecoration: "none" },
+      backLink: { textAlign: "center" as const, fontSize: 14, color: "#64748b", textDecoration: "none", fontWeight: 600, paddingBlock: 8 },
+    };
+
+    return (
+      <>
+        <Navbar />
+        <main className="checkout-page success">
+          <div style={s.wrap}>
+            <div style={{ ...s.card, ...s.header }}>
+              <div style={s.icon}>✓</div>
+              <h1 style={s.h1}>Pembayaran Diterima!</h1>
+              <p style={s.subtext}>
+                Pesanan Anda sedang diproses. Kami akan menghubungi Anda secepatnya melalui WhatsApp.
+              </p>
+              <p style={s.badge}>Kode Referensi: {success}</p>
+            </div>
+
+            <div style={s.card}>
+              <p style={s.desc}>
+                Untuk follow-up lebih cepat atau jika ada pertanyaan mengenai pesanan Anda,
+                silakan chat kami langsung via WhatsApp.
+              </p>
+              <a href={chatWaLink} target="_blank" rel="noopener noreferrer" style={s.chatBtn}>
+                Chat Kami Sekarang
+              </a>
+            </div>
+
+            <Link href="/" style={s.backLink}>← Kembali ke Beranda</Link>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   // ── Bank transfer success page ────────────────────────────────────────────
   if (success) {
     const [booking, bankAccount] = await Promise.all([

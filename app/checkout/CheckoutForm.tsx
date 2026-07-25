@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { confirmBookingAction, createMidtransAction } from "./actions";
+import { confirmBookingAction, createMidtransAction, createDokuAction } from "./actions";
 
 declare global {
   interface Window {
@@ -17,6 +17,7 @@ declare global {
         },
       ) => void;
     };
+    loadJokulCheckout?: (url: string) => void;
   }
 }
 
@@ -37,7 +38,8 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
   const router = useRouter();
   const [bankState, bankAction, bankPending] = useActionState(confirmBookingAction, {});
   const [midtransState, midtransAction, midtransPending] = useActionState(createMidtransAction, {});
-  const [paymentMethod, setPaymentMethod] = useState<"bank_transfer" | "midtrans">("bank_transfer");
+  const [dokuState, dokuAction, dokuPending] = useActionState(createDokuAction, {});
+  const [paymentMethod, setPaymentMethod] = useState<"bank_transfer" | "midtrans" | "doku">("bank_transfer");
   const [phoneMsg, setPhoneMsg] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [emailVal, setEmailVal] = useState("");
@@ -52,6 +54,18 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
     const script = document.createElement("script");
     script.src = snapUrl;
     script.setAttribute("data-client-key", clientKey);
+    script.async = true;
+    document.head.appendChild(script);
+  }, []);
+
+  // Load DOKU jokul-checkout-js (no client key needed — it only takes a payment URL)
+  useEffect(() => {
+    const checkoutJsUrl = process.env.NEXT_PUBLIC_DOKU_CHECKOUT_JS_URL;
+    if (!checkoutJsUrl) return;
+    if (document.querySelector(`script[src="${checkoutJsUrl}"]`)) return;
+
+    const script = document.createElement("script");
+    script.src = checkoutJsUrl;
     script.async = true;
     document.head.appendChild(script);
   }, []);
@@ -77,10 +91,31 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
     tryPay();
   }, [midtransState.snapToken, midtransState.orderId, router]);
 
+  // Open DOKU Checkout popup when paymentUrl is returned. The popup's own success/close
+  // behavior is NOT trusted here (unconfirmed callback support) — the real confirmation
+  // always comes from /checkout/doku-finish (DOKU's callback_url redirect) + the webhook.
+  useEffect(() => {
+    if (!dokuState.paymentUrl) return;
+    const paymentUrl = dokuState.paymentUrl;
+
+    const tryOpen = (attempt = 0) => {
+      if (window.loadJokulCheckout) {
+        window.loadJokulCheckout(paymentUrl);
+      } else if (attempt >= 20) {
+        // Script never loaded — fall back to a plain full-page redirect.
+        window.location.href = paymentUrl;
+      } else {
+        setTimeout(() => tryOpen(attempt + 1), 250);
+      }
+    };
+    tryOpen();
+  }, [dokuState.paymentUrl]);
+
   const isMidtrans = paymentMethod === "midtrans";
-  const currentAction = isMidtrans ? midtransAction : bankAction;
-  const pending = isMidtrans ? midtransPending : bankPending;
-  const error = isMidtrans ? midtransState.error : bankState.error;
+  const isDoku = paymentMethod === "doku";
+  const currentAction = isMidtrans ? midtransAction : isDoku ? dokuAction : bankAction;
+  const pending = isMidtrans ? midtransPending : isDoku ? dokuPending : bankPending;
+  const error = isMidtrans ? midtransState.error : isDoku ? dokuState.error : bankState.error;
 
   function handlePhoneKey(e: React.KeyboardEvent<HTMLInputElement>) {
     const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter"];
@@ -184,6 +219,23 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
             <small>Konfirmasi manual oleh admin via WhatsApp.</small>
           </span>
         </label>
+        {/* DOKU & Midtrans belum diverifikasi merchant — nonaktifkan dulu, sisakan Transfer Bank manual.
+        <label
+          className="payment-option"
+          style={paymentMethod === "doku" ? { borderColor: "#2a7a2a", background: "#f0f7ee", marginTop: 8 } : { marginTop: 8 }}
+        >
+          <input
+            type="radio"
+            name="paymentMethod"
+            value="doku"
+            checked={paymentMethod === "doku"}
+            onChange={() => setPaymentMethod("doku")}
+          />
+          <span>
+            <strong>Bayar Sekarang</strong>
+            <small>QRIS, kartu kredit/debit, e-wallet, VA bank (via DOKU).</small>
+          </span>
+        </label>
         <label
           className="payment-option"
           style={paymentMethod === "midtrans" ? { borderColor: "#2a7a2a", background: "#f0f7ee", marginTop: 8 } : { marginTop: 8 }}
@@ -196,10 +248,11 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
             onChange={() => setPaymentMethod("midtrans")}
           />
           <span>
-            <strong>Bayar Sekarang</strong>
-            <small>QRIS, kartu kredit/debit, e-wallet, VA bank (via Midtrans).</small>
+            <strong>Bayar Sekarang (Midtrans, sementara)</strong>
+            <small>Jalur lama — akan dihapus setelah DOKU teruji.</small>
           </span>
         </label>
+        */}
       </section>
 
       <label className="terms-check">
@@ -212,8 +265,8 @@ export default function CheckoutForm({ packageSlug, startDate, adultCount, child
 
       <button type="submit" className="confirm-booking-btn" disabled={pending}>
         {pending
-          ? isMidtrans ? "Memuat pembayaran..." : "Memproses..."
-          : isMidtrans ? "Bayar Sekarang" : "Pesan Sekarang"}
+          ? (isMidtrans || isDoku) ? "Memuat pembayaran..." : "Memproses..."
+          : (isMidtrans || isDoku) ? "Bayar Sekarang" : "Pesan Sekarang"}
       </button>
     </form>
   );

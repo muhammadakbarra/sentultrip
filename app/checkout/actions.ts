@@ -8,10 +8,12 @@ import { sendFonnteMessage, buildBookingNotifMessage } from "@/lib/fonnte";
 import { getTieredAdultPrice, getTieredChildPrice } from "@/lib/pricing";
 import { waLink } from "@/lib/whatsapp";
 import { createSnapToken } from "@/lib/midtrans";
+import { createDokuPayment } from "@/lib/doku";
 
 type CheckoutState = { error?: string };
 export type FinalizeState = { error?: string; waUrl?: string; bookingCode?: string };
 export type MidtransState = { error?: string; snapToken?: string; orderId?: string };
+export type DokuState = { error?: string; paymentUrl?: string; invoiceNumber?: string };
 
 function required(formData: FormData, key: string) {
   const value = String(formData.get(key) || "").trim();
@@ -151,6 +153,64 @@ export async function createMidtransAction(_state: MidtransState, formData: Form
     });
 
     return { snapToken: result.token, orderId };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Gagal membuat transaksi." };
+  }
+}
+
+// DOKU: validate, create booking as pending, create DOKU Checkout payment, return payment URL to client.
+// Unlike Midtrans (DB write deferred to webhook via custom_field1), DOKU has no generic passthrough
+// field, so the booking row is created up front and the webhook only looks it up + confirms it.
+export async function createDokuAction(_state: DokuState, formData: FormData): Promise<DokuState> {
+  try {
+    const { packageSlug, startDate, adultCount, childCount, nasiLiwetCount, pickupCount, fullName, email, phoneRaw, city, detail, adultPrice, childPrice, nasiLiwetPrice, pickupPrice, totalAmount } =
+      validateBookingForm(formData);
+
+    const invoiceNumber = `DOKU-${packageSlug.replace(/[^a-z0-9]/gi, "").slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+
+    await createBooking({
+      packageSlug,
+      packageName: detail.name,
+      tripCode: invoiceNumber,
+      startDate,
+      endDate: startDate,
+      adultCount,
+      childCount,
+      adultPrice,
+      childPrice,
+      nasiLiwetCount,
+      nasiLiwetPrice,
+      pickupCount,
+      pickupPrice,
+      totalAmount,
+      firstName: fullName,
+      lastName: "",
+      email,
+      phone: phoneRaw,
+      address: "",
+      city,
+      country: "Indonesia",
+      paymentMethod: "doku",
+    });
+
+    const lineItems = [
+      { name: `Dewasa – ${detail.name}`, price: adultPrice, quantity: adultCount },
+      ...(childCount > 0 ? [{ name: `Anak – ${detail.name}`, price: childPrice, quantity: childCount }] : []),
+      ...(nasiLiwetCount > 0 ? [{ name: "Nasi Liwet Komplit", price: nasiLiwetPrice, quantity: nasiLiwetCount }] : []),
+      ...(pickupCount > 0 ? [{ name: "Mobil Pick-up (PP)", price: pickupPrice, quantity: pickupCount }] : []),
+    ];
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sentultrip.com";
+    const result = await createDokuPayment({
+      invoiceNumber,
+      amount: totalAmount,
+      lineItems,
+      customer: { name: fullName, email, phone: phoneRaw, country: "ID" },
+      callbackUrl: `${appUrl}/checkout/doku-finish?inv=${encodeURIComponent(invoiceNumber)}`,
+      callbackUrlCancel: `${appUrl}/checkout/doku-finish?inv=${encodeURIComponent(invoiceNumber)}&cancelled=1`,
+    });
+
+    return { paymentUrl: result.paymentUrl, invoiceNumber };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Gagal membuat transaksi." };
   }
