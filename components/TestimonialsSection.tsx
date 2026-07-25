@@ -35,6 +35,30 @@ const testimonials = [
     initials: "MA",
     text: "Yang tidak saya duga: guide-nya juga membantu mengambil foto grup dengan komposisi yang baik tanpa diminta. Foto-foto itu akhirnya masuk deck presentasi internal perusahaan.",
   },
+  {
+    name: "Muhamad Burdah",
+    trip: "Google Review",
+    initials: "MB",
+    text: "Trekking bareng SentulTrip benar-benar seru dan berkesan. Rutenya enak, tidak membosankan, dan pemandangannya cakep banget. Guide-nya sabar, informatif, dan selalu memperhatikan keselamatan peserta. Cocok banget buat yang pengen refreshing dari rutinitas kota. Terima kasih SentulTrip 🙌",
+  },
+  {
+    name: "Citranick",
+    trip: "Trekking Curug Cibingbin — Google Review",
+    initials: "CI",
+    text: "Tur guidenya, Aa Apis keren banget. Sangat membantu, bisa jadi fotografer juga dan baik banget. Servis turnya juga bagus. Kami pilih yang paket trekking Cibingbin reguler, harga terjangkau dan sudah disediakan jas hujan dan air minum.",
+  },
+  {
+    name: "Wildan Sakher",
+    trip: "Google Review",
+    initials: "WS",
+    text: "Alhamdulillah, berkat SentulTrip saya jadi bisa berwisata sambil olahraga. Poin penting dari pelayanannya beneran memuaskan, guide-nya gokil, harga juga paling murah. Terima kasih provider SentulTrip.",
+  },
+  {
+    name: "Addel",
+    trip: "Google Review",
+    initials: "AD",
+    text: "Cus cus cus, lain waktu wajib trekking lagi bareng SentulTrip. Puas banget sama pelayanannya, terbaik.",
+  },
 ];
 
 const cardThemes = [

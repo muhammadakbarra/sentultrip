@@ -80,16 +80,16 @@ const jsonLd = {
   telephone: "+62 857-7577-7430",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Kp. Cibingbin RT 001 RW 006, Desa Bojong Koneng",
-    addressLocality: "Babakan Madang",
-    addressRegion: "Bogor",
+    streetAddress: "Kp. Cibingbin RT 001 RW 006, Desa Bojong Koneng, Kec. Babakan Madang",
+    addressLocality: "Kabupaten Bogor",
+    addressRegion: "Jawa Barat",
     postalCode: "16810",
     addressCountry: "ID",
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: -6.5833,
-    longitude: 106.9167,
+    latitude: -6.6050785,
+    longitude: 106.9051429,
   },
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
@@ -106,6 +106,11 @@ const jsonLd = {
     closes: "18:00",
   },
   priceRange: "Rp 150.000 - Rp 1.500.000",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    reviewCount: "8",
+  },
   sameAs: [
     "https://www.instagram.com/sentultrip.id",
     "https://www.tiktok.com/@sentultrip.id",
