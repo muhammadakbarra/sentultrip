@@ -10,7 +10,7 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sentultrip.com"),
+  metadataBase: new URL("https://sentultrip.id"),
   title: "SentulTrip — Wisata Trekking & Offroad di Sentul Bogor",
   description:
     "Paket wisata trekking curug, offroad jeep, dan corporate outing di Sentul Bogor. Guide lokal berpengalaman, harga transparan mulai Rp 150.000. Buka setiap hari.",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "SentulTrip — Wisata Trekking & Offroad di Sentul Bogor",
     description:
       "Paket wisata trekking curug, offroad jeep, dan corporate outing di Sentul Bogor. Guide lokal berpengalaman, harga transparan mulai Rp 150.000.",
-    url: "https://sentultrip.com",
+    url: "https://sentultrip.id",
     siteName: "SentulTrip",
     locale: "id_ID",
     type: "website",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   alternates: {
-    canonical: "https://sentultrip.com",
+    canonical: "https://sentultrip.id",
   },
   robots: {
     index: true,
@@ -75,8 +75,8 @@ const jsonLd = {
   name: "SentulTrip",
   description:
     "Paket wisata trekking curug, offroad jeep, dan corporate outing di Sentul Bogor",
-  url: "https://sentultrip.com",
-  telephone: "+6281XXXXXXXX",
+  url: "https://sentultrip.id",
+  telephone: "+62 857-7577-7430",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Kp. Cibingbin RT 001 RW 006, Desa Bojong Koneng",
@@ -106,8 +106,10 @@ const jsonLd = {
   },
   priceRange: "Rp 150.000 - Rp 1.500.000",
   sameAs: [
-    "https://www.instagram.com/sentultrip",
-    "https://wa.me/6281XXXXXXXX",
+    "https://www.instagram.com/sentultrip.id",
+    "https://www.tiktok.com/@sentultrip.id",
+    "https://www.facebook.com/share/18n3ETrDAF/",
+    "https://wa.me/6285775777430",
   ],
 };
 

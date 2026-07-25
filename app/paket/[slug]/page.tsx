@@ -30,7 +30,7 @@ export async function generateMetadata({
   if (!detail) return {};
 
   const title = `${detail.name} — SentulTrip`;
-  const url = `https://sentultrip.com/paket/${detail.slug}`;
+  const url = `https://sentultrip.id/paket/${detail.slug}`;
   const image = detail.photos[0];
 
   return {

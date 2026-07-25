@@ -5,7 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: ["/admin", "/api", "/checkout"],
     },
-    sitemap: "https://sentultrip.com/sitemap.xml",
+    sitemap: "https://sentultrip.id/sitemap.xml",
   };
 }

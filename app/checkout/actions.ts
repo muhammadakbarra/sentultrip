@@ -143,7 +143,7 @@ export async function createMidtransAction(_state: MidtransState, formData: Form
       fn: fullName, ph: phoneRaw, em: email, ci: city,
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sentultrip.com";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sentultrip.id";
     const result = await createSnapToken({
       transaction_details: { order_id: orderId, gross_amount: totalAmount },
       customer_details: { first_name: fullName, email, phone: phoneRaw },
@@ -200,7 +200,7 @@ export async function createDokuAction(_state: DokuState, formData: FormData): P
       ...(pickupCount > 0 ? [{ name: "Mobil Pick-up (PP)", price: pickupPrice, quantity: pickupCount }] : []),
     ];
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sentultrip.com";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://sentultrip.id";
     const result = await createDokuPayment({
       invoiceNumber,
       amount: totalAmount,
