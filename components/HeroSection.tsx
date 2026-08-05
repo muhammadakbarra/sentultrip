@@ -1,5 +1,13 @@
 import Image from "next/image";
 import { waLink } from "@/lib/whatsapp";
+import packages from "@/data/packages";
+
+function formatRupiah(n: number) {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+}
+
+const trekkingPrices = packages.filter((p) => p.type === "trekking").map((p) => p.price);
+const startingPrice = Math.min(...trekkingPrices);
 
 const highlights = [
   "Trekking Curug",
@@ -143,6 +151,20 @@ export default function HeroSection() {
               Hubungi Kami via WhatsApp &rarr;
             </a>
           </div>
+
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#666666",
+              marginTop: "16px",
+            }}
+          >
+            Trekking mulai{" "}
+            <strong style={{ color: "var(--color-green-primary)" }}>
+              {formatRupiah(startingPrice)}
+            </strong>
+            /orang
+          </p>
         </div>
 
         {/* Right — logo + activity thumbnails */}
@@ -178,7 +200,7 @@ export default function HeroSection() {
                 key={thumb.src}
                 style={{
                   position: "relative",
-                  height: "72px",
+                  height: "100px",
                   borderRadius: "8px",
                   overflow: "hidden",
                   border: "1px solid var(--color-border)",

@@ -8,6 +8,37 @@ import { getPackageDetail, getAllSlugs } from "@/data/packageDetails";
 import BookingFlow from "@/components/BookingFlow";
 import { PackageCard } from "@/components/PackagesSection";
 import packages from "@/data/packages";
+import {
+  ClockIcon,
+  RouteIcon,
+  GaugeIcon,
+  UsersIcon,
+  UserCheckIcon,
+  SunriseIcon,
+  MapPinIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  BackpackIcon,
+  AlertTriangleIcon,
+  HelpCircleIcon,
+  ChevronDownIcon,
+  FlagIcon,
+  InfoIcon,
+  ClipboardCheckIcon,
+  SparkleIcon,
+  highlightIcons,
+} from "@/components/icons/PackageIcons";
+
+function difficultyLevel(d: string): number | null {
+  const s = d.toLowerCase();
+  if (s.includes("semua")) return null;
+  if (s.includes("sulit") || s.includes("berat")) return 3;
+  if (s.includes("menengah")) return 2;
+  if (s.includes("ringan") && s.includes("sedang")) return 2;
+  if (s.includes("sedang")) return 2;
+  if (s.includes("ringan")) return 1;
+  return null;
+}
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -77,13 +108,15 @@ export default async function PackageDetailPage({
       : [...sameType, ...packages.filter((p) => p.slug !== detail.slug && !sameType.includes(p))]
   ).slice(0, 3);
 
-  const quickInfo = [
-    { label: "Durasi", value: detail.duration },
-    { label: "Harga", value: `${price}/orang` },
-    { label: "Level", value: detail.difficulty },
-    { label: "Min. Usia", value: detail.minAge },
-    { label: "Area", value: detail.locationArea },
-    { label: "Rute", value: detail.routeType },
+  type Spec = { icon: typeof ClockIcon; label: string; value: string; meter?: number | null };
+  const specs: Spec[] = [
+    { icon: ClockIcon, label: "Durasi", value: detail.duration },
+    ...(detail.distance ? [{ icon: RouteIcon, label: "Jarak", value: detail.distance }] : []),
+    { icon: GaugeIcon, label: "Level", value: detail.difficulty, meter: difficultyLevel(detail.difficulty) },
+    { icon: UserCheckIcon, label: "Min. Usia", value: detail.minAge },
+    { icon: UsersIcon, label: "Kapasitas", value: detail.capacity },
+    { icon: SunriseIcon, label: "Waktu Terbaik", value: detail.bestTime },
+    { icon: MapPinIcon, label: "Area", value: detail.locationArea },
   ];
 
   return (
@@ -133,74 +166,105 @@ export default async function PackageDetailPage({
 
         <section id="detail-paket" className="package-container package-content-grid">
           <div className="package-main">
-            <section className="quick-card-grid">
-              {quickInfo.map((item) => (
-                <div className="quick-card" key={item.label}>
-                  <span>{item.label}</span>
-                  <strong>{item.value}</strong>
+            <section className="spec-strip">
+              {specs.map((item) => (
+                <div className="spec-chip" key={item.label}>
+                  <item.icon size={20} className="spec-chip-icon" />
+                  <div className="spec-chip-body">
+                    <span>{item.label}</span>
+                    <strong>{item.value}</strong>
+                    {item.meter != null && <DifficultyMeter level={item.meter} />}
+                  </div>
                 </div>
               ))}
             </section>
 
-            <Section title="Tentang Paket Ini">
+            <Section title="Tentang Paket Ini" icon={<InfoIcon size={19} />}>
+              <p className="route-line"><RouteIcon size={16} /> {detail.routeType}</p>
               {detail.description.map((p, i) => (
                 <p key={i} className="body-copy">{p}</p>
               ))}
             </Section>
 
-            <Section title="Kenapa Pilih Paket Ini">
+            <Section title="Kenapa Pilih Paket Ini" icon={<SparkleIcon size={19} />}>
               <div className="highlight-grid">
-                {detail.highlights.map((h) => (
-                  <article className="highlight-card" key={h.title}>
-                    <div className="accent-line" />
-                    <h3>{h.title}</h3>
-                    <p>{h.desc}</p>
-                  </article>
-                ))}
+                {detail.highlights.map((h, i) => {
+                  const HIcon = highlightIcons[i % highlightIcons.length];
+                  return (
+                    <article className="highlight-card" key={h.title}>
+                      <div className="highlight-icon"><HIcon size={20} /></div>
+                      <h3>{h.title}</h3>
+                      <p>{h.desc}</p>
+                    </article>
+                  );
+                })}
               </div>
             </Section>
 
-            <Section title="Cocok Untuk">
+            <Section title="Cocok Untuk" icon={<UsersIcon size={19} />}>
               <div className="pill-list">
                 {detail.suitableFor.map((item) => <span key={item}>{item}</span>)}
               </div>
             </Section>
 
-            <Section title="Jadwal Perjalanan">
+            <Section title="Jadwal Perjalanan" icon={<RouteIcon size={19} />}>
               <div className="timeline">
-                {detail.schedule.map((s) => (
-                  <div className="timeline-item" key={`${s.time}-${s.activity}`}>
-                    <time>{s.time}</time>
-                    <p>{s.activity}</p>
-                  </div>
-                ))}
+                {detail.schedule.map((s, i) => {
+                  const isFirst = i === 0;
+                  const isLast = i === detail.schedule.length - 1;
+                  return (
+                    <div className={`timeline-item${isFirst ? " is-start" : ""}${isLast ? " is-finish" : ""}`} key={`${s.time}-${s.activity}`}>
+                      {(isFirst || isLast) && (
+                        <span className="timeline-marker">
+                          {isFirst ? <FlagIcon size={12} /> : <MapPinIcon size={12} />}
+                        </span>
+                      )}
+                      <time>{s.time}</time>
+                      <p>{s.activity}</p>
+                    </div>
+                  );
+                })}
               </div>
             </Section>
 
-            <Section title="Fasilitas & Ketentuan">
+            <Section title="Fasilitas & Ketentuan" icon={<ClipboardCheckIcon size={19} />}>
               <div className="included-grid">
                 <InfoList title="Sudah Termasuk" type="yes" items={detail.includes} />
                 <InfoList title="Tidak Termasuk" type="no" items={detail.excludes} />
               </div>
             </Section>
 
-            <Section title="Yang Perlu Dibawa">
-              <div className="simple-list">
-                {detail.whatToBring.map((item) => <div key={item}>→ {item}</div>)}
+            <Section title="Yang Perlu Dibawa" icon={<BackpackIcon size={19} />}>
+              <div className="checklist-grid">
+                {detail.whatToBring.map((item) => (
+                  <div className="checklist-item" key={item}>
+                    <CheckCircleIcon size={17} className="checklist-icon" />
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             </Section>
 
-            <Section title="Catatan Keamanan">
-              <div className="simple-list warning-list">
-                {detail.safetyNotes.map((item) => <div key={item}>! {item}</div>)}
+            <Section title="Catatan Keamanan" icon={<AlertTriangleIcon size={19} />}>
+              <div className="checklist-grid">
+                {detail.safetyNotes.map((item) => (
+                  <div className="checklist-item warning-item" key={item}>
+                    <AlertTriangleIcon size={17} className="checklist-icon warning-icon" />
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
             </Section>
 
-            <Section title="Pertanyaan Umum">
+            <Section title="Pertanyaan Umum" icon={<HelpCircleIcon size={19} />}>
               <div className="faq-list">
                 {detail.faq.map((faq) => (
                   <details key={faq.question}>
-                    <summary>{faq.question}</summary>
+                    <summary>
+                      <HelpCircleIcon size={17} className="faq-q-icon" />
+                      <span>{faq.question}</span>
+                      <ChevronDownIcon size={17} className="faq-chevron" />
+                    </summary>
                     <p>{faq.answer}</p>
                   </details>
                 ))}
@@ -223,14 +287,14 @@ export default async function PackageDetailPage({
                 <small>per orang</small>
               </div>
 
-              <InfoRow label="Durasi" value={detail.duration} />
-              <InfoRow label="Kapasitas" value={detail.capacity} />
-              <InfoRow label="Kesulitan" value={detail.difficulty} />
-              <InfoRow label="Min. Usia" value={detail.minAge} />
-              <InfoRow label="Waktu terbaik" value={detail.bestTime} />
+              <InfoRow icon={<ClockIcon size={16} />} label="Durasi" value={detail.duration} />
+              <InfoRow icon={<UsersIcon size={16} />} label="Kapasitas" value={detail.capacity} />
+              <InfoRow icon={<GaugeIcon size={16} />} label="Kesulitan" value={detail.difficulty} />
+              <InfoRow icon={<UserCheckIcon size={16} />} label="Min. Usia" value={detail.minAge} />
+              <InfoRow icon={<SunriseIcon size={16} />} label="Waktu terbaik" value={detail.bestTime} />
 
               <div className="meeting-box">
-                <span>Titik Kumpul</span>
+                <span><MapPinIcon size={15} /> Titik Kumpul</span>
                 <p>{detail.meetingPoint}</p>
               </div>
 
@@ -295,17 +359,24 @@ export default async function PackageDetailPage({
         .gallery-section { padding-bottom: 42px; }
         .package-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 44px; align-items: start; padding-bottom: 82px; }
         .package-main section { margin-bottom: 42px; }
-        .section-title { font-size: 26px; line-height: 1.2; letter-spacing: -.4px; margin: 0 0 18px; color: #111; }
+        .section-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .section-icon { flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px; background: #eaf5e8; color: #2a7a2a; display: flex; align-items: center; justify-content: center; }
+        .section-title { font-size: 26px; line-height: 1.2; letter-spacing: -.4px; margin: 0; color: #111; }
         .body-copy { font-size: 17px; line-height: 1.85; color: #444; margin-bottom: 14px; }
+        .route-line { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 700; color: #2a7a2a; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 14px; }
 
-        .quick-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .quick-card { border: 1px solid #e5e5e0; background: #fdfdfb; border-radius: 14px; padding: 16px; }
-        .quick-card span { display: block; color: #777; font-size: 13px; margin-bottom: 4px; }
-        .quick-card strong { color: #111; font-size: 16px; line-height: 1.35; }
+        .spec-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+        .spec-chip { display: flex; gap: 12px; align-items: flex-start; border: 1px solid #e5e5e0; background: #fdfdfb; border-radius: 14px; padding: 14px 16px; }
+        .spec-chip-icon { flex-shrink: 0; color: #2a7a2a; margin-top: 1px; }
+        .spec-chip-body span { display: block; color: #888; font-size: 12.5px; margin-bottom: 3px; }
+        .spec-chip-body strong { color: #111; font-size: 15px; line-height: 1.3; }
+        .difficulty-meter { display: flex; gap: 3px; margin-top: 6px; }
+        .difficulty-meter span { width: 18px; height: 5px; border-radius: 3px; background: #e5e5e0; }
+        .difficulty-meter span.bar-filled { background: #2a7a2a; }
 
         .highlight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .highlight-card { background: #f0f7ee; border: 1px solid #c8e0c5; border-radius: 14px; padding: 20px; }
-        .accent-line { width: 38px; height: 4px; background: #2a7a2a; border-radius: 999px; margin-bottom: 13px; }
+        .highlight-icon { width: 38px; height: 38px; border-radius: 10px; background: #fff; color: #2a7a2a; display: flex; align-items: center; justify-content: center; margin-bottom: 13px; }
         .highlight-card h3 { font-size: 17px; line-height: 1.35; margin-bottom: 8px; color: #111; }
         .highlight-card p { font-size: 15px; line-height: 1.7; color: #444; }
         .pill-list { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -315,6 +386,8 @@ export default async function PackageDetailPage({
         .timeline:before { content: ""; position: absolute; left: 6px; top: 7px; bottom: 7px; width: 2px; background: #e5e5e0; }
         .timeline-item { position: relative; display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 14px; margin-bottom: 18px; }
         .timeline-item:before { content: ""; position: absolute; left: -20px; top: 6px; width: 12px; height: 12px; border-radius: 99px; background: #2a7a2a; box-shadow: 0 0 0 3px #eaf5e8; }
+        .timeline-item.is-start:before, .timeline-item.is-finish:before { content: none; }
+        .timeline-marker { position: absolute; left: -25px; top: 1px; width: 22px; height: 22px; border-radius: 50%; background: #2a7a2a; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px #eaf5e8; }
         .timeline-item time { font-size: 15px; font-weight: 850; color: #2a7a2a; }
         .timeline-item p { font-size: 16px; line-height: 1.6; color: #333; }
 
@@ -322,20 +395,27 @@ export default async function PackageDetailPage({
         .info-list { border-radius: 14px; padding: 20px; border: 1px solid #e5e5e0; }
         .info-list.yes { background: #f0f7ee; border-color: #c8e0c5; }
         .info-list.no { background: #fff8f5; border-color: #f0d0c0; }
-        .info-list h3 { font-size: 17px; margin-bottom: 12px; }
+        .info-list h3 { display: flex; align-items: center; gap: 8px; font-size: 17px; margin-bottom: 12px; }
         .info-list ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
         .info-list li { display: flex; gap: 9px; align-items: flex-start; font-size: 15px; line-height: 1.55; color: #333; }
-        .info-list li span { font-weight: 900; flex-shrink: 0; }
-        .info-list.yes li span { color: #2a7a2a; }
-        .info-list.no li span { color: #c0602a; }
+        .info-list li svg { flex-shrink: 0; margin-top: 1px; }
+        .info-list.yes h3, .info-list.yes li svg { color: #2a7a2a; }
+        .info-list.no h3, .info-list.no li svg { color: #c0602a; }
 
-        .simple-list { display: grid; gap: 10px; }
-        .simple-list div { background: #f7f7f5; border: 1px solid #e5e5e0; border-radius: 12px; padding: 14px 16px; font-size: 16px; line-height: 1.6; color: #333; }
-        .warning-list div { background: #fffaf0; border-color: #f0dfb8; }
+        .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .checklist-item { display: flex; gap: 10px; align-items: flex-start; background: #f7f7f5; border: 1px solid #e5e5e0; border-radius: 12px; padding: 13px 15px; font-size: 15px; line-height: 1.5; color: #333; }
+        .checklist-icon { flex-shrink: 0; margin-top: 1px; color: #2a7a2a; }
+        .warning-item { background: #fffaf0; border-color: #f0dfb8; }
+        .warning-icon { color: #b8790a; }
         .faq-list { display: grid; gap: 10px; }
         .faq-list details { border: 1px solid #e5e5e0; border-radius: 12px; background: #fff; padding: 16px 18px; }
-        .faq-list summary { cursor: pointer; font-size: 16px; font-weight: 800; color: #111; }
-        .faq-list p { font-size: 15px; line-height: 1.7; color: #444; margin-top: 10px; }
+        .faq-list summary { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 16px; font-weight: 800; color: #111; list-style: none; }
+        .faq-list summary::-webkit-details-marker { display: none; }
+        .faq-q-icon { flex-shrink: 0; color: #2a7a2a; }
+        .faq-list summary span { flex: 1; }
+        .faq-chevron { flex-shrink: 0; color: #888; transition: transform .2s; }
+        .faq-list details[open] .faq-chevron { transform: rotate(180deg); }
+        .faq-list p { font-size: 15px; line-height: 1.7; color: #444; margin-top: 10px; padding-left: 27px; }
 
         .closing-cta { background: #102b15; color: #fff; border-radius: 18px; padding: 30px; }
         .closing-cta h2 { font-size: 28px; line-height: 1.25; margin-bottom: 8px; }
@@ -346,10 +426,12 @@ export default async function PackageDetailPage({
         .booking-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 18px; padding: 26px; box-shadow: 0 8px 30px rgba(0,0,0,.08); }
         .booking-price { padding-bottom: 20px; border-bottom: 1px solid #f0f0eb; margin-bottom: 4px; }
         .info-row { display: flex; justify-content: space-between; gap: 18px; padding: 12px 0; border-bottom: 1px solid #f0f0eb; font-size: 15px; }
-        .info-row span { color: #777; }
+        .info-row span { display: flex; align-items: center; gap: 7px; color: #777; }
+        .info-row span svg { color: #2a7a2a; }
         .info-row strong { color: #111; text-align: right; }
         .meeting-box { padding: 14px 0; border-bottom: 1px solid #f0f0eb; }
-        .meeting-box span { display: block; color: #777; font-size: 14px; margin-bottom: 5px; }
+        .meeting-box span { display: flex; align-items: center; gap: 6px; color: #777; font-size: 14px; margin-bottom: 5px; }
+        .meeting-box span svg { color: #2a7a2a; }
         .meeting-box p { color: #333; line-height: 1.6; font-size: 15px; }
         .booking-card .availability-btn { width: 100%; margin-top: 20px; }
         .booking-note { text-align: center; color: #888; font-size: 13px; margin-top: 10px; }
@@ -363,7 +445,6 @@ export default async function PackageDetailPage({
           .package-hero, .package-content-grid { grid-template-columns: 1fr; }
           .hero-price-card { display: none; }
           .booking-card-wrap { position: static; }
-          .quick-card-grid { grid-template-columns: repeat(2, 1fr); }
           .highlight-grid { grid-template-columns: 1fr; }
           .related-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -376,48 +457,63 @@ export default async function PackageDetailPage({
           .package-short, .body-copy { font-size: 16px; line-height: 1.75; }
           .primary-cta, .secondary-cta { width: 100%; font-size: 16px; }
           .gallery-section { padding-bottom: 32px; }
-          .quick-card-grid, .included-grid, .related-grid { grid-template-columns: 1fr; }
-          .quick-card strong { font-size: 17px; }
+          .spec-strip { grid-template-columns: repeat(2, 1fr); }
+          .included-grid, .related-grid, .checklist-grid { grid-template-columns: 1fr; }
           .section-title { font-size: 24px; }
+          .section-icon { width: 34px; height: 34px; }
           .timeline-item { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; }
           .timeline-item p { font-size: 15.5px; }
           .booking-card-wrap { display: none; }
           .mobile-sticky-cta-wrap { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #2a7a2a; color: #fff; border-radius: 14px; padding: 12px 16px; box-shadow: 0 10px 26px rgba(0,0,0,.22); }
           .mobile-sticky-cta-wrap span { font-size: 13px; opacity: .88; white-space: nowrap; }
-          .mobile-sticky-cta-wrap .availability-btn { width: auto; margin-top: 0; min-height: 42px; padding: 10px 14px; background: #fff; color: #1e5c1e; }
+          .mobile-sticky-cta-wrap .availability-btn { width: auto; margin-top: 0; min-height: 42px; padding: 10px 14px; background: #fff; color: #1e5c1e; font-size: 13.5px; white-space: nowrap; }
         }
       `}</style>
     </>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="section-title">{title}</h2>
+      <div className="section-title-row">
+        {icon && <span className="section-icon">{icon}</span>}
+        <h2 className="section-title">{title}</h2>
+      </div>
       {children}
     </section>
   );
 }
 
 function InfoList({ title, items, type }: { title: string; items: string[]; type: "yes" | "no" }) {
+  const Icon = type === "yes" ? CheckCircleIcon : XCircleIcon;
   return (
     <div className={`info-list ${type}`}>
-      <h3>{type === "yes" ? "✓" : "✕"} {title}</h3>
+      <h3><Icon size={17} /> {title}</h3>
       <ul>
         {items.map((item) => (
-          <li key={item}><span>{type === "yes" ? "✓" : "✕"}</span>{item}</li>
+          <li key={item}><Icon size={16} />{item}</li>
         ))}
       </ul>
     </div>
   );
 }
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string }) {
   return (
     <div className="info-row">
-      <span>{label}</span>
+      <span>{icon}{label}</span>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+function DifficultyMeter({ level }: { level: number }) {
+  return (
+    <div className="difficulty-meter" aria-hidden="true">
+      {[1, 2, 3].map((i) => (
+        <span key={i} className={i <= level ? "bar-filled" : ""} />
+      ))}
     </div>
   );
 }

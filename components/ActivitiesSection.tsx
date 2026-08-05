@@ -1,4 +1,16 @@
 import { waLink } from "@/lib/whatsapp";
+import packages, { PackageType } from "@/data/packages";
+
+function formatRupiah(n: number) {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(n);
+}
+
+function priceLabel(type: PackageType): string {
+  const items = packages.filter((p) => p.type === type);
+  if (items.length === 0) return "Hubungi untuk penawaran khusus";
+  const min = Math.min(...items.map((p) => p.price));
+  return `Mulai ${formatRupiah(min)}/${items[0].priceUnit}`;
+}
 
 const activities = [
   {
@@ -9,6 +21,7 @@ const activities = [
       </svg>
     ),
     name: "Trekking Curug",
+    type: "trekking" as PackageType,
     desc: "Jelajahi curug tersembunyi di Sentul Bogor bersama guide berpengalaman. Rute tersedia untuk pemula hingga peserta berpengalaman.",
     link: waLink("Halo SentulTrip, saya ingin tanya paket trekking curug di Sentul. Ada jadwal tersedia minggu ini?"),
     external: true,
@@ -23,6 +36,7 @@ const activities = [
       </svg>
     ),
     name: "Offroad Jeep",
+    type: "offroad" as PackageType,
     desc: "Paket offroad jeep Sentul melewati jalur tanah merah dan sungai berbatu di sekitar Babakan Madang, Bogor.",
     link: waLink("Halo SentulTrip, saya tertarik paket offroad jeep di Sentul. Untuk berapa orang per jeep dan harganya?"),
     external: true,
@@ -37,6 +51,7 @@ const activities = [
       </svg>
     ),
     name: "Corporate & Outbound",
+    type: "corporate" as PackageType,
     desc: "Paket outbound dan team building di Sentul untuk perusahaan, sekolah, dan komunitas. Kapasitas grup besar tersedia.",
     link: waLink("Halo SentulTrip, kami dari [nama perusahaan] ingin tanya paket corporate outing atau outbound di Sentul untuk sekitar [jumlah] peserta."),
     external: true,
@@ -107,6 +122,7 @@ export default function ActivitiesSection() {
               <div style={{ color: "var(--color-green-primary)" }}>{act.icon}</div>
               <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#111111" }}>{act.name}</h3>
               <p style={{ fontSize: "14px", color: "#666666", lineHeight: 1.65, flex: 1 }}>{act.desc}</p>
+              <p style={{ fontSize: "13px", fontWeight: 700, color: "#111111" }}>{priceLabel(act.type)}</p>
               <a
                 href={act.link}
                 target="_blank"
@@ -135,7 +151,10 @@ export default function ActivitiesSection() {
               className="activity-btn"
             >
               <span style={{ color: "var(--color-green-primary)", display: "flex" }}>{act.icon}</span>
-              <span>{act.name}</span>
+              <span style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                <span>{act.name}</span>
+                <span style={{ fontSize: "12px", fontWeight: 500, color: "#888888" }}>{priceLabel(act.type)}</span>
+              </span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ marginLeft: "auto", opacity: 0.4 }}>
                 <polyline points="9 18 15 12 9 6" />
               </svg>

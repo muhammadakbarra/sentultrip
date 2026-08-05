@@ -42,11 +42,21 @@ export default function PackageGallery({
         }}
       >
         <div className="gallery-photo-frame">
+          {/* Blurred backdrop fills the frame so portrait/square photos never get cropped */}
+          <Image
+            src={photos[current]}
+            alt=""
+            aria-hidden="true"
+            fill
+            style={{ objectFit: "cover", filter: "blur(28px) brightness(0.65)", transform: "scale(1.15)", pointerEvents: "none" }}
+            sizes="(max-width: 640px) 100vw, (max-width: 1140px) calc(100vw - 48px), 1092px"
+            quality={30}
+          />
           <Image
             src={photos[current]}
             alt={`${name} foto`}
             fill
-            style={{ objectFit: "cover", pointerEvents: "none" }}
+            style={{ objectFit: "contain", pointerEvents: "none" }}
             sizes="(max-width: 640px) 100vw, (max-width: 1140px) calc(100vw - 48px), 1092px"
             priority
             quality={85}
@@ -156,7 +166,7 @@ export default function PackageGallery({
             onClick={() => setCurrent(i)}
             style={{
               flexShrink: 0, position: "relative",
-              width: "72px", height: "52px",
+              width: "58px", height: "72px",
               borderRadius: "6px", overflow: "hidden",
               border: i === current ? "2px solid #2a7a2a" : "2px solid transparent",
               cursor: "pointer", padding: 0, background: "#f0efe9",
@@ -164,7 +174,7 @@ export default function PackageGallery({
             }}
             aria-label={`Pilih foto ${i + 1}`}
           >
-            <Image src={src} alt="" fill style={{ objectFit: "cover", pointerEvents: "none" }} sizes="72px" loading="lazy" quality={60} />
+            <Image src={src} alt="" fill style={{ objectFit: "cover", pointerEvents: "none" }} sizes="58px" loading="lazy" quality={60} />
           </button>
         ))}
       </div>
@@ -173,11 +183,14 @@ export default function PackageGallery({
         .gallery-photo-frame {
           position: relative;
           width: 100%;
-          aspect-ratio: 16/9;
+          aspect-ratio: 4/5;
         }
         .gallery-hint { margin-top: 10px; text-align: center; color: #777; font-size: 14px; }
+        @media (min-width: 641px) {
+          .package-gallery-main { max-width: 460px; margin: 0 auto; }
+          .gallery-thumbnails { max-width: 460px; margin-left: auto; margin-right: auto; }
+        }
         @media (max-width: 640px) {
-          .gallery-photo-frame { aspect-ratio: 3/4; }
           .package-gallery-main { border-radius: 14px !important; }
           .gallery-thumbnails { display: none !important; }
           .gallery-hint { font-size: 13px; }
