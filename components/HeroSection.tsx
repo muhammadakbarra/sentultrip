@@ -33,7 +33,7 @@ export default function HeroSection() {
   return (
     <section
       id="hero"
-      style={{ backgroundColor: "#ffffff", paddingTop: "72px" }}
+      style={{ backgroundColor: "#ffffff", paddingTop: "52px" }}
     >
       {/* 2-column layout */}
       <div
@@ -43,9 +43,9 @@ export default function HeroSection() {
           padding: "0 24px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "64px",
+          gap: "44px",
           alignItems: "center",
-          paddingBottom: "72px",
+          paddingBottom: "52px",
         }}
         className="hero-grid"
       >
@@ -66,11 +66,11 @@ export default function HeroSection() {
 
           <h1
             style={{
-              fontSize: "clamp(30px, 3.5vw, 44px)",
+              fontSize: "clamp(28px, 3vw, 38px)",
               fontWeight: 700,
-              lineHeight: 1.15,
+              lineHeight: 1.12,
               letterSpacing: "-0.5px",
-              marginBottom: "20px",
+              marginBottom: "16px",
               color: "#111111",
             }}
           >
@@ -84,7 +84,7 @@ export default function HeroSection() {
               fontSize: "15px",
               lineHeight: 1.75,
               color: "#444444",
-              marginBottom: "32px",
+              marginBottom: "24px",
               maxWidth: "480px",
             }}
           >
@@ -100,7 +100,7 @@ export default function HeroSection() {
               display: "flex",
               gap: "10px",
               flexWrap: "wrap",
-              marginBottom: "36px",
+              marginBottom: "28px",
             }}
           >
             {highlights.map((h) => (
@@ -174,7 +174,7 @@ export default function HeroSection() {
             style={{
               position: "relative",
               width: "100%",
-              height: "300px",
+              height: "240px",
             }}
           >
             <Image
@@ -200,7 +200,7 @@ export default function HeroSection() {
                 key={thumb.src}
                 style={{
                   position: "relative",
-                  height: "100px",
+                  height: "88px",
                   borderRadius: "8px",
                   overflow: "hidden",
                   border: "1px solid var(--color-border)",
@@ -240,22 +240,22 @@ export default function HeroSection() {
               key={i}
               style={{
                 textAlign: "center",
-                padding: "20px 16px",
+                padding: "16px 12px",
                 borderRight: i < stats.length - 1 ? "1px solid var(--color-border)" : "none",
               }}
             >
               <div
                 style={{
-                  fontSize: "clamp(20px, 2.5vw, 26px)",
+                  fontSize: "clamp(18px, 2.2vw, 24px)",
                   fontWeight: 700,
                   color: "#111111",
                   lineHeight: 1,
-                  marginBottom: "4px",
+                  marginBottom: "3px",
                 }}
               >
                 {stat.value}
               </div>
-              <div style={{ fontSize: "12px", color: "#888888" }}>{stat.label}</div>
+              <div style={{ fontSize: "11px", color: "#888888" }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -265,7 +265,7 @@ export default function HeroSection() {
         @media (max-width: 768px) {
           .hero-grid {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
+            gap: 28px !important;
           }
         }
       `}</style>

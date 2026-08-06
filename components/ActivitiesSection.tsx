@@ -64,7 +64,7 @@ export default function ActivitiesSection() {
       id="aktivitas"
       style={{
         backgroundColor: "var(--color-bg-secondary)",
-        padding: "72px 0",
+        padding: "56px 0",
       }}
     >
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
@@ -76,7 +76,7 @@ export default function ActivitiesSection() {
             letterSpacing: "3px",
             textTransform: "uppercase",
             color: "var(--color-green-primary)",
-            marginBottom: "12px",
+            marginBottom: "10px",
           }}
         >
           Aktivitas
@@ -87,7 +87,7 @@ export default function ActivitiesSection() {
             fontSize: "28px",
             fontWeight: 700,
             color: "#111111",
-            marginBottom: "8px",
+            marginBottom: "6px",
           }}
         >
           Aktivitas yang Kami Tawarkan
@@ -96,7 +96,7 @@ export default function ActivitiesSection() {
           style={{
             fontSize: "15px",
             color: "#888888",
-            marginBottom: "40px",
+            marginBottom: "28px",
             lineHeight: 1.6,
           }}
         >
@@ -113,10 +113,10 @@ export default function ActivitiesSection() {
                 backgroundColor: "#ffffff",
                 border: "1px solid var(--color-border)",
                 borderRadius: "12px",
-                padding: "24px",
+                padding: "20px",
                 display: "flex",
                 flexDirection: "column",
-                gap: "12px",
+                gap: "10px",
               }}
             >
               <div style={{ color: "var(--color-green-primary)" }}>{act.icon}</div>
@@ -167,7 +167,7 @@ export default function ActivitiesSection() {
         .activities-cards {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-          gap: 20px;
+          gap: 16px;
         }
         .activities-buttons { display: none; }
 
@@ -185,7 +185,7 @@ export default function ActivitiesSection() {
             background: #ffffff;
             border: 1px solid var(--color-border);
             border-radius: 12px;
-            padding: 16px 18px;
+            padding: 14px 16px;
             font-size: 15px;
             font-weight: 600;
             color: #111111;
