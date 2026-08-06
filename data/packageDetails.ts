@@ -104,7 +104,9 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 30 orang per sesi",
     difficulty: "Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 10 }, (_, i) => `/produk/curug-cibingbin/${i + 1}.jpeg`),
+    photos: Array.from({ length: 10 }, (_, i) =>
+      i === 8 ? `/produk/curug-cibingbin/9.jpeg` : `/produk/curug-cibingbin/${i + 1}.webp`
+    ),
   },
   {
     slug: "curug-bidadari",
@@ -182,7 +184,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 25 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 7 }, (_, i) => `/produk/curug-bidadari/${i + 1}.jpeg`),
+    photos: Array.from({ length: 7 }, (_, i) => `/produk/curug-bidadari/${i + 1}.webp`),
   },
   {
     slug: "desa-cisadon",
@@ -269,7 +271,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "3 – 40 orang per sesi",
     difficulty: "Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 5 }, (_, i) => `/produk/desa-cisadon/${i + 1}.jpeg`),
+    photos: Array.from({ length: 5 }, (_, i) => `/produk/desa-cisadon/${i + 1}.webp`),
   },
   {
     slug: "bukit-daolong",
@@ -355,7 +357,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "3 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 3 }, (_, i) => `/produk/bukit-daolong/${i + 1}.jpeg`),
+    photos: Array.from({ length: 3 }, (_, i) => `/produk/bukit-daolong/${i + 1}.webp`),
   },
   {
     slug: "puncak-langit",
@@ -440,7 +442,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "3 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 3 }, (_, i) => `/produk/puncak-langit/${i + 1}.jpeg`),
+    photos: Array.from({ length: 3 }, (_, i) => `/produk/puncak-langit/${i + 1}.webp`),
   },
   {
     slug: "bukit-paniisan",
@@ -525,7 +527,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "3 – 40 orang per sesi",
     difficulty: "Menengah",
     minAge: "5 tahun",
-    photos: Array.from({ length: 4 }, (_, i) => `/produk/bukit-paniisan/${i + 1}.jpeg`),
+    photos: Array.from({ length: 4 }, (_, i) => `/produk/bukit-paniisan/${i + 1}.webp`),
   },
   {
     slug: "goa-garunggang",
@@ -610,7 +612,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "3 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "5 tahun",
-    photos: Array.from({ length: 3 }, (_, i) => `/produk/goa-garunggang/${i + 1}.jpeg`),
+    photos: Array.from({ length: 3 }, (_, i) => `/produk/goa-garunggang/${i + 1}.webp`),
   },
   {
     slug: "leuwi-asih",
@@ -695,7 +697,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 6 }, (_, i) => `/produk/leuwi-asih/${i + 1}.jpeg`),
+    photos: Array.from({ length: 6 }, (_, i) => `/produk/leuwi-asih/${i + 1}.webp`),
   },
   {
     slug: "putri-kencana-curug-love",
@@ -782,7 +784,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 4 }, (_, i) => `/produk/Putri-Kencana-Curug-Love/${i + 1}.jpeg`),
+    photos: Array.from({ length: 4 }, (_, i) => `/produk/Putri-Kencana-Curug-Love/${i + 1}.webp`),
   },
   {
     slug: "leuwi-hejo-cepet-lieuk",
@@ -871,7 +873,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 8 }, (_, i) => `/produk/Leuwi Hejo-Leuwi Cepet-Leuwi-Lieuk/${i + 1}.jpeg`),
+    photos: Array.from({ length: 8 }, (_, i) => `/produk/Leuwi Hejo-Leuwi Cepet-Leuwi-Lieuk/${i + 1}.webp`),
   },
   {
     slug: "curug-hordeng-kembar",
@@ -958,7 +960,7 @@ const packageDetails: PackageDetail[] = [
     capacity: "2 – 40 orang per sesi",
     difficulty: "Ringan – Sedang",
     minAge: "3 tahun",
-    photos: Array.from({ length: 4 }, (_, i) => `/produk/Curug-Hordeng-Curug-Kembar/${i + 1}.jpeg`),
+    photos: Array.from({ length: 4 }, (_, i) => `/produk/Curug-Hordeng-Curug-Kembar/${i + 1}.webp`),
   },
   {
     slug: "offroad-curug-bidadari",

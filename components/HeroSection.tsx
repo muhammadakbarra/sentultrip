@@ -178,7 +178,7 @@ export default function HeroSection() {
             }}
           >
             <Image
-              src="/logo-sentuiltrip.JPG"
+              src="/logo-sentuiltrip.webp"
               alt="Logo SentulTrip — Wisata Trekking dan Offroad Sentul Bogor"
               fill
               sizes="(max-width: 768px) 92vw, 540px"
