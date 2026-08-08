@@ -82,7 +82,7 @@ export default function WhyUsSection() {
         className="whyus-grid"
       >
         {/* Left — text */}
-        <div style={{ paddingTop: "4px" }}>
+        <div className="reveal" style={{ paddingTop: "4px" }}>
           <p
             style={{
               fontSize: "11px",
@@ -135,7 +135,7 @@ export default function WhyUsSection() {
           {cards.map((c) => (
             <div
               key={c.title}
-              className="card-hover"
+              className="card-hover reveal"
               style={{
                 backgroundColor: "#ffffff",
                 border: "1px solid var(--color-border)",
@@ -158,7 +158,7 @@ export default function WhyUsSection() {
         {/* Mobile: compact checklist */}
         <div className="whyus-list">
           {cards.map((c) => (
-            <div key={c.title} className="whyus-list-item">
+            <div key={c.title} className="whyus-list-item reveal">
               <span style={{ color: "var(--color-green-primary)", display: "flex", flexShrink: 0 }}>{c.icon}</span>
               <span style={{ fontSize: "15px", fontWeight: 600, color: "#111111" }}>{c.title}</span>
             </div>

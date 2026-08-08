@@ -70,6 +70,7 @@ export default function ActivitiesSection() {
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
         {/* Label */}
         <p
+          className="reveal"
           style={{
             fontSize: "11px",
             fontWeight: 600,
@@ -83,6 +84,7 @@ export default function ActivitiesSection() {
         </p>
 
         <h2
+          className="reveal"
           style={{
             fontSize: "28px",
             fontWeight: 700,
@@ -93,6 +95,7 @@ export default function ActivitiesSection() {
           Aktivitas yang Kami Tawarkan
         </h2>
         <p
+          className="reveal"
           style={{
             fontSize: "15px",
             color: "#888888",
@@ -108,7 +111,7 @@ export default function ActivitiesSection() {
           {activities.map((act) => (
             <div
               key={act.name}
-              className="hover-lift"
+              className="hover-lift reveal"
               style={{
                 backgroundColor: "#ffffff",
                 border: "1px solid var(--color-border)",
@@ -148,7 +151,7 @@ export default function ActivitiesSection() {
               href={act.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="activity-btn"
+              className="activity-btn reveal"
             >
               <span style={{ color: "var(--color-green-primary)", display: "flex" }}>{act.icon}</span>
               <span style={{ display: "flex", flexDirection: "column", gap: "2px" }}>

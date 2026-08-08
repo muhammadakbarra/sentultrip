@@ -68,7 +68,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
 
   return (
     <div
-      className="card-hover"
+      className="card-hover reveal"
       style={{
         backgroundColor: t.cardBg,
         border: `1px solid ${t.cardBorder}`,
@@ -270,6 +270,7 @@ export default function PackagesSection() {
     <section id="paket" style={{ backgroundColor: "var(--color-bg-primary)", padding: "72px 0" }}>
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
         <p
+          className="reveal"
           style={{
             fontSize: "11px", fontWeight: 600, letterSpacing: "3px",
             textTransform: "uppercase", color: "var(--color-green-primary)", marginBottom: "12px",
@@ -279,6 +280,7 @@ export default function PackagesSection() {
         </p>
 
         <div
+          className="reveal"
           style={{
             display: "flex", alignItems: "flex-end", justifyContent: "space-between",
             gap: "16px", flexWrap: "wrap", marginBottom: "28px",
@@ -294,7 +296,7 @@ export default function PackagesSection() {
         </div>
 
         {/* Filter tabs */}
-        <div style={{ display: "flex", borderBottom: "1px solid var(--color-border)", marginBottom: "32px", overflowX: "auto" }}>
+        <div className="reveal" style={{ display: "flex", borderBottom: "1px solid var(--color-border)", marginBottom: "32px", overflowX: "auto" }}>
           {filters.map((f) => (
             <button
               key={f.value}

@@ -68,6 +68,7 @@ export default function FaqSection() {
     >
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
         <p
+          className="reveal"
           style={{
             fontSize: "11px",
             fontWeight: 600,
@@ -81,6 +82,7 @@ export default function FaqSection() {
         </p>
 
         <h2
+          className="reveal"
           style={{
             fontSize: "28px",
             fontWeight: 700,
@@ -97,6 +99,7 @@ export default function FaqSection() {
             return (
               <div
                 key={i}
+                className="reveal"
                 style={{
                   borderBottom: "1px solid #e5e5e0",
                 }}

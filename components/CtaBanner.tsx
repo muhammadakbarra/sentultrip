@@ -21,7 +21,7 @@ export default function CtaBanner() {
           flexWrap: "wrap",
         }}
       >
-        <div>
+        <div className="reveal">
           <h2
             style={{
               fontSize: "28px",
@@ -45,7 +45,7 @@ export default function CtaBanner() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexShrink: 0 }}>
+        <div className="reveal" style={{ display: "flex", gap: "12px", flexWrap: "wrap", flexShrink: 0 }}>
           <a
             href={waLink("Halo SentulTrip, saya mau konsultasi paket wisata di Sentul. Kapan bisa mulai bincang?")}
             target="_blank"

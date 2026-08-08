@@ -80,6 +80,7 @@ export default function TestimonialsSection() {
     >
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
         <p
+          className="reveal"
           style={{
             fontSize: "11px",
             fontWeight: 600,
@@ -93,11 +94,13 @@ export default function TestimonialsSection() {
         </p>
 
         <h2
+          className="reveal"
           style={{ fontSize: "28px", fontWeight: 700, color: "#111111", marginBottom: "8px" }}
         >
           Cerita dari Wisatawan Kami
         </h2>
         <p
+          className="reveal"
           style={{
             fontSize: "15px",
             color: "#888888",
@@ -120,7 +123,7 @@ export default function TestimonialsSection() {
             return (
               <div
                 key={t.name}
-                className="card-hover"
+                className="card-hover reveal"
                 style={{
                   backgroundColor: theme.bg,
                   border: `1px solid ${theme.border}`,

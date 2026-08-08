@@ -52,6 +52,7 @@ export default function HeroSection() {
         {/* Left — text */}
         <div>
           <p
+            className="reveal"
             style={{
               fontSize: "11px",
               fontWeight: 600,
@@ -65,6 +66,7 @@ export default function HeroSection() {
           </p>
 
           <h1
+            className="reveal"
             style={{
               fontSize: "clamp(28px, 3vw, 38px)",
               fontWeight: 700,
@@ -80,6 +82,7 @@ export default function HeroSection() {
           </h1>
 
           <p
+            className="reveal"
             style={{
               fontSize: "15px",
               lineHeight: 1.75,
@@ -96,6 +99,7 @@ export default function HeroSection() {
 
           {/* Highlights */}
           <div
+            className="reveal"
             style={{
               display: "flex",
               gap: "10px",
@@ -121,7 +125,7 @@ export default function HeroSection() {
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
+          <div className="reveal" style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
             <a
               href="#paket"
               className="hover-opacity"
@@ -168,7 +172,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right — logo + activity thumbnails */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div className="reveal" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {/* Logo image */}
           <div
             style={{
@@ -238,6 +242,7 @@ export default function HeroSection() {
           {stats.map((stat, i) => (
             <div
               key={i}
+              className="reveal"
               style={{
                 textAlign: "center",
                 padding: "16px 12px",
