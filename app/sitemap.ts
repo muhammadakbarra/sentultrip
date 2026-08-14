@@ -34,6 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://sentultrip.id/kambing-guling",
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: "https://sentultrip.id/blog",
       lastModified: now,
       changeFrequency: "weekly",

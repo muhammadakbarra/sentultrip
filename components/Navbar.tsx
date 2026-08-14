@@ -6,10 +6,10 @@ import Image from "next/image";
 import { waLink } from "@/lib/whatsapp";
 
 const navLinks = [
-  { label: "Paket", href: "/#paket" },
+  { label: "Paket Wisata", href: "/#paket" },
+  { label: "Kambing Guling", href: "/kambing-guling" },
   { label: "Keunggulan", href: "/#tentang" },
   { label: "Testimoni", href: "/#testimoni" },
-  { label: "FAQ", href: "/#faq" },
   { label: "Blog", href: "/blog" },
   { label: "Kontak", href: "/#kontak" },
 ];

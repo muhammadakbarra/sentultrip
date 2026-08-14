@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google';
 import Script from 'next/script';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import RecentBookingNotification from '@/components/RecentBookingNotification';
+import ScrollRestorationFix from '@/components/ScrollRestorationFix';
 import './globals.css';
 
 const font = Poppins({
@@ -128,7 +129,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang='id' className={`${font.variable} h-full`}>
+        <html lang='id' data-scroll-behavior="smooth" className={`${font.variable} h-full`}>
             <head>
                 <script
                     type='application/ld+json'
@@ -139,6 +140,7 @@ export default function RootLayout({
                 className='min-h-full flex flex-col antialiased'
                 style={{ fontFamily: 'var(--font-poppins), sans-serif' }}
             >
+                <ScrollRestorationFix />
                 <a href='#main-content' className='skip-link'>
                     Lewati ke konten
                 </a>

@@ -97,7 +97,7 @@ export default function PackageGallery({
               fill
               style={{ objectFit: "cover" }}
               sizes="(max-width: 1140px) 40vw, 440px"
-              quality={80}
+              quality={85}
             />
             <div className="pkg-img-overlay" />
           </div>
@@ -115,7 +115,7 @@ export default function PackageGallery({
               fill
               style={{ objectFit: "cover" }}
               sizes="(max-width: 1140px) 40vw, 440px"
-              quality={80}
+              quality={85}
             />
             <div className="pkg-img-overlay" />
 
@@ -258,7 +258,7 @@ export default function PackageGallery({
                 fill
                 style={{ objectFit: "contain" }}
                 sizes="100vw"
-                quality={90}
+                quality={85}
                 priority
               />
 
