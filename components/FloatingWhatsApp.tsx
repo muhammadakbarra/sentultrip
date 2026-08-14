@@ -22,9 +22,14 @@ export default function FloatingWhatsApp() {
   }
 
   const url = waLink(DEFAULT_MESSAGE);
+  const isOnPackagePage = pathname?.startsWith("/paket/");
 
   return (
-    <div className="floating-wa-container" aria-label="WhatsApp Chat" style={{ zIndex: 99999 }}>
+    <div
+      className={`floating-wa-container ${isOnPackagePage ? "on-package-page" : ""}`}
+      aria-label="WhatsApp Chat"
+      style={{ zIndex: 99999 }}
+    >
       {/* Tooltip text */}
       <div className={`floating-wa-tooltip ${showTooltip ? "is-visible" : ""}`}>
         <div className="floating-wa-tooltip-header">

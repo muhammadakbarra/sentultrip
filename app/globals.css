@@ -2960,3 +2960,15 @@ section[id] {
     padding: 3px;
   }
 }
+
+/* ── Package Page Specific Floating Elevation (Above Mobile Bottom Bar) ── */
+@media (max-width: 920px) {
+  .floating-wa-container.on-package-page {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .recent-booking-wrap.on-package-page {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+

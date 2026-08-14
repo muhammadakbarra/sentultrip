@@ -135,9 +135,11 @@ export default function RecentBookingNotification() {
     return null;
   }
 
+  const isOnPackagePage = pathname?.startsWith("/paket/");
+
   return (
     <div
-      className={`recent-booking-wrap ${visible ? "is-visible" : "is-hidden"}`}
+      className={`recent-booking-wrap ${visible ? "is-visible" : "is-hidden"} ${isOnPackagePage ? "on-package-page" : ""}`}
       aria-live="polite"
       style={{
         zIndex: 99998,
