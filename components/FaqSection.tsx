@@ -63,7 +63,8 @@ export default function FaqSection() {
       id="faq"
       style={{
         backgroundColor: "var(--color-bg-secondary)",
-        padding: "72px 0",
+        padding: "44px 0",
+        borderTop: "1px solid var(--color-border)",
       }}
     >
       <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 24px" }}>
@@ -71,11 +72,11 @@ export default function FaqSection() {
           className="reveal"
           style={{
             fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "3px",
+            fontWeight: 700,
+            letterSpacing: "2.5px",
             textTransform: "uppercase",
             color: "var(--color-green-primary)",
-            marginBottom: "12px",
+            marginBottom: "4px",
           }}
         >
           Tanya Jawab
@@ -84,10 +85,11 @@ export default function FaqSection() {
         <h2
           className="reveal"
           style={{
-            fontSize: "28px",
-            fontWeight: 700,
-            color: "#111111",
-            marginBottom: "40px",
+            fontSize: "24px",
+            fontWeight: 800,
+            color: "#111827",
+            letterSpacing: "-0.4px",
+            marginBottom: "24px",
           }}
         >
           Pertanyaan yang Sering Ditanyakan

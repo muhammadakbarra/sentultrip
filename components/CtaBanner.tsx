@@ -6,7 +6,7 @@ export default function CtaBanner() {
       id="kontak"
       style={{
         backgroundColor: "var(--color-green-primary)",
-        padding: "72px 0",
+        padding: "48px 0",
       }}
     >
       <div

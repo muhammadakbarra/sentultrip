@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { waLink } from "@/lib/whatsapp";
 
 const navLinks = [
-  { label: "Paket", href: "#paket" },
-  { label: "Aktivitas", href: "#aktivitas" },
-  { label: "Galeri", href: "#gallery" },
-  { label: "Tentang Kami", href: "#tentang" },
+  { label: "Paket", href: "/#paket" },
+  { label: "Keunggulan", href: "/#tentang" },
+  { label: "Testimoni", href: "/#testimoni" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Blog", href: "/blog" },
-  { label: "Kontak", href: "#kontak" },
+  { label: "Kontak", href: "/#kontak" },
 ];
 
 const bookUrl = waLink("Halo SentulTrip, saya ingin tanya informasi paket wisata yang tersedia. Bisa bantu?");
@@ -71,22 +72,49 @@ export default function Navbar() {
         }}
       >
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", flexDirection: "column", gap: "2px", textDecoration: "none" }}>
-          <span style={{ fontSize: "22px", fontWeight: 700, lineHeight: 1 }}>
-            <span style={{ color: "var(--color-green-dark)" }}>sentul</span>
-            <span style={{ color: "var(--color-gold)" }}>trip</span>
-          </span>
-          <span
+        <Link
+          href="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            textDecoration: "none",
+          }}
+        >
+          <div
             style={{
-              fontSize: "9px",
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              color: "#aaa",
-              fontWeight: 500,
+              position: "relative",
+              width: "44px",
+              height: "44px",
+              flexShrink: 0,
             }}
           >
-            Explore · Trekking · Offroad
-          </span>
+            <Image
+              src="/logo-sentuiltrip.webp"
+              alt="SentulTrip Logo"
+              fill
+              sizes="44px"
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1px" }}>
+            <span style={{ fontSize: "20px", fontWeight: 800, lineHeight: 1, letterSpacing: "-0.3px" }}>
+              <span style={{ color: "var(--color-green-dark)" }}>sentul</span>
+              <span style={{ color: "var(--color-gold)" }}>trip</span>
+            </span>
+            <span
+              style={{
+                fontSize: "8.5px",
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "#888",
+                fontWeight: 600,
+              }}
+            >
+              Explore · Trekking · Offroad
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav links */}
