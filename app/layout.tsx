@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Poppins } from 'next/font/google';
 import Script from 'next/script';
+import FloatingWhatsApp from '@/components/FloatingWhatsApp';
+import RecentBookingNotification from '@/components/RecentBookingNotification';
 import './globals.css';
 
 const font = Poppins({
@@ -141,6 +143,8 @@ export default function RootLayout({
                     Lewati ke konten
                 </a>
                 <div id='main-content'>{children}</div>
+                <FloatingWhatsApp />
+                <RecentBookingNotification />
                 {gaMeasurementId ? (
                     <>
                         <Script
