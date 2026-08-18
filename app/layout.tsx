@@ -72,6 +72,10 @@ export const viewport: Viewport = {
 };
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+const gtagIds = [gaMeasurementId, googleAdsId].filter(
+    (id): id is string => Boolean(id),
+);
 
 const jsonLd = {
     '@context': 'https://schema.org',
@@ -147,21 +151,21 @@ export default function RootLayout({
                 <div id='main-content'>{children}</div>
                 <FloatingWhatsApp />
                 <RecentBookingNotification />
-                {gaMeasurementId ? (
+                {gtagIds.length > 0 ? (
                     <>
                         <Script
-                            src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+                            src={`https://www.googletagmanager.com/gtag/js?id=${gtagIds[0]}`}
                             strategy='afterInteractive'
                         />
                         <Script
-                            id='google-analytics'
+                            id='google-tag'
                             strategy='afterInteractive'
                         >
                             {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){window.dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${gaMeasurementId}');
+                ${gtagIds.map((id) => `gtag('config', '${id}');`).join('\n                ')}
               `}
                         </Script>
                     </>
